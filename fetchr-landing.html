@@ -1,0 +1,4204 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fetchr - премиальный стрим-конвейер</title>
+  <meta name="description" content="Fetchr - премиальный dark SaaS лендинг для захвата, нарезки и подготовки стримов.">
+  <script>
+    (() => {
+      const routePath = window.location.pathname.replace(/\/+$/, "") || "/";
+      if (routePath === "/reviews") document.documentElement.classList.add("route-reviews");
+      if (routePath === "/write-review") document.documentElement.classList.add("route-write-review");
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070b0a;
+      --ink: #f8fbff;
+      --muted: rgba(255, 255, 255, .7);
+      --soft: #c8d7ed;
+      --accent: #178bff;
+      --cyan: #55e6ff;
+      --blue: #178bff;
+      --violet: #7c4dff;
+      --line: rgba(255,255,255,.1);
+      --line-strong: rgba(126, 219, 255, .36);
+      --glass: rgba(255,255,255,.055);
+      --max: 1180px;
+      --shadow: 0 34px 120px rgba(0,0,0,.58);
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      max-width: 100%;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% -15%, rgba(23,139,255,.16), transparent 32rem),
+        radial-gradient(circle at 78% 12%, rgba(23,139,255,.18), transparent 28rem),
+        #030504;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+      pointer-events: none;
+      opacity: .13;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { font: inherit; color: inherit; }
+    main, section { max-width: 100%; }
+
+    .container {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      padding: 18px 20px;
+      pointer-events: none;
+    }
+
+    .nav-shell {
+      pointer-events: auto;
+      width: min(1220px, 100%);
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) auto minmax(240px, 1fr);
+      align-items: center;
+      gap: 18px;
+      padding: 8px 10px 8px 14px;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 999px;
+      background: rgba(7, 11, 10, .62);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 22px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+      justify-self: start;
+    }
+
+    .brand-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+
+    .brand-mark {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(23,139,255,.9);
+    }
+
+    .desktop-nav {
+      display: flex;
+      justify-content: center;
+      justify-self: center;
+      gap: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .desktop-nav a {
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: rgba(255,255,255,.76);
+      transition: color .2s ease, background .2s ease;
+    }
+
+    .desktop-nav a:hover {
+      color: var(--accent);
+      background: rgba(255,255,255,.06);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      grid-column: 3;
+      justify-self: end;
+      gap: 9px;
+    }
+
+    .menu-btn {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      cursor: pointer;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: .06em;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .22s ease, background .22s ease, border-color .22s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(23,139,255,.42);
+      background: rgba(255,255,255,.09);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+      box-shadow: 0 16px 44px rgba(23,139,255,.28);
+    }
+
+    .btn-primary svg { transition: transform .22s ease; }
+    .btn-primary:hover svg { transform: translateX(3px); }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 32px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(23,139,255,.18), transparent 34rem),
+        rgba(3,5,4,.96);
+      backdrop-filter: blur(18px);
+    }
+
+    .mobile-menu.open { display: grid; }
+
+    .mobile-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      cursor: pointer;
+    }
+
+    .mobile-links {
+      display: grid;
+      gap: 22px;
+      text-align: center;
+      font-size: clamp(36px, 12vw, 72px);
+      line-height: .92;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .mobile-links a:hover { color: var(--accent); }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      display: grid;
+      align-items: start;
+      padding: 104px 0 64px;
+      isolation: isolate;
+    }
+
+    .video-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: -6;
+      background:
+        radial-gradient(circle at 52% 30%, rgba(23,139,255,.26), transparent 18rem),
+        radial-gradient(circle at 74% 58%, rgba(23,139,255,.22), transparent 24rem),
+        linear-gradient(135deg, #07100e, #030504 60%);
+    }
+
+    .stream-wall {
+      position: absolute;
+      inset: 82px -14vw 0;
+      z-index: -5;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: .34;
+      mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    }
+
+    .stream-track {
+      position: absolute;
+      left: 50%;
+      display: flex;
+      width: max-content;
+      gap: 22px;
+      transform: translateX(-50%) rotateX(11deg);
+      animation: streamFlow 96s linear infinite;
+    }
+
+    .stream-track:nth-child(1) { top: 8px; animation-duration: 128s; opacity: .62; }
+    .stream-track:nth-child(2) { top: 216px; animation-duration: 144s; animation-direction: reverse; opacity: .54; }
+    .stream-track:nth-child(3) { top: 424px; animation-duration: 158s; opacity: .48; }
+    .stream-track:nth-child(4) { top: 632px; animation-duration: 172s; animation-direction: reverse; opacity: .42; }
+    .stream-track:nth-child(5) { top: 840px; animation-duration: 188s; opacity: .36; }
+    .stream-track:nth-child(6) { top: 1048px; animation-duration: 204s; animation-direction: reverse; opacity: .31; }
+    .stream-track:nth-child(7) { top: 1256px; animation-duration: 218s; opacity: .27; }
+    .stream-track:nth-child(8) { top: 1464px; animation-duration: 234s; animation-direction: reverse; opacity: .23; }
+    .stream-track:nth-child(9) { top: 1672px; animation-duration: 248s; opacity: .2; }
+    .stream-track:nth-child(10) { top: 1880px; animation-duration: 264s; animation-direction: reverse; opacity: .17; }
+
+    @keyframes streamFlow {
+      from { transform: translateX(-34%) rotateX(11deg); }
+      to { transform: translateX(-72%) rotateX(11deg); }
+    }
+
+    .stream-card-bg {
+      width: 286px;
+      height: 162px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(64, 164, 255, .13);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 30% 15%, rgba(23,139,255,.32), transparent 34%),
+        linear-gradient(135deg, rgba(9,18,34,.92), rgba(3,6,12,.96));
+      box-shadow: 0 20px 64px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+
+
+    .vod-thumb {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 28% 22%, hsla(var(--h), 100%, 58%, .45), transparent 28%),
+        linear-gradient(135deg, hsl(var(--h), 76%, 12%), #020407);
+    }
+
+    .vod-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .88;
+      filter: saturate(1.18) contrast(1.08) brightness(.78);
+      transform: scale(1.035);
+    }
+
+    .vod-thumb::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.18) 45%, rgba(1,4,9,.92) 100%),
+        radial-gradient(circle at 78% 12%, rgba(23,139,255,.34), transparent 34%);
+    }
+
+    .stream-card-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .78;
+      filter: saturate(1.1) contrast(1.05);
+    }
+
+    .stream-card-bg .vod-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .62;
+      filter: saturate(1.02) contrast(1.02) brightness(.62);
+      transform: scale(1.035);
+    }
+
+    .stream-card-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, transparent 0 44%, rgba(3,5,12,.9) 100%),
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.25), transparent 42%);
+    }
+
+    .stream-card-bg b,
+    .stream-card-bg span {
+      position: absolute;
+      z-index: 3;
+      left: 14px;
+    }
+
+    .stream-card-bg b {
+      bottom: 34px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .stream-card-bg span {
+      bottom: 14px;
+      color: rgba(255,255,255,.66);
+      font-size: 12px;
+    }
+
+    .stream-card-bg i {
+      position: absolute;
+      z-index: 3;
+      right: 12px;
+      top: 12px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .left-gradient {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background: linear-gradient(90deg, #070b0a 0%, rgba(7,11,10,.86) 20%, rgba(7,11,10,.22) 58%, transparent 100%);
+    }
+
+    .bottom-gradient {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background: linear-gradient(0deg, #030504 0%, rgba(3,5,4,.7) 18%, transparent 52%);
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      opacity: .9;
+    }
+
+    .grid-lines span {
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+
+    .grid-lines span:last-child { border-right: 0; }
+
+    .center-glow {
+      position: absolute;
+      left: 50%;
+      top: 10%;
+      width: min(860px, 90vw);
+      height: 210px;
+      transform: translateX(-50%);
+      z-index: -1;
+      pointer-events: none;
+      opacity: .9;
+    }
+
+    .hero-layout {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 6;
+      width: min(980px, 100%);
+      max-width: 980px;
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .liquid-card {
+      position: relative;
+      width: min(420px, 100%);
+      min-height: 74px;
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      align-items: center;
+      column-gap: 14px;
+      padding: 10px 24px 10px 12px;
+      margin-top: 22px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.035);
+      background-blend-mode: luminosity;
+      backdrop-filter: blur(14px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.12), 0 20px 70px rgba(0,0,0,.34), 0 0 46px rgba(23,139,255,.11);
+      overflow: hidden;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .liquid-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1.4px;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.08));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .liquid-card::after {
+      content: "";
+      position: absolute;
+      inset: -70% -20%;
+      background: radial-gradient(circle at 18% 45%, rgba(23,139,255,.22), transparent 24%), radial-gradient(circle at 76% 55%, rgba(85,230,255,.12), transparent 26%);
+      animation: glassMove 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes glassMove {
+      from { transform: translate3d(-4%, -3%, 0) rotate(-5deg); }
+      to { transform: translate3d(5%, 4%, 0) rotate(6deg); }
+    }
+
+    .liquid-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .glass-year {
+      display: none;
+    }
+
+    .glass-title {
+      grid-column: 2;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-align: left;
+    }
+
+    .serif {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+
+    .glass-text {
+      grid-column: 2;
+      margin: 3px 0 0;
+      color: rgba(255,255,255,.68);
+      font-size: 13px;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    .rachel-logo {
+      position: relative;
+      z-index: 2;
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      top: auto;
+      right: auto;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.34);
+      box-shadow: 0 0 0 4px rgba(23,139,255,.08), 0 14px 34px rgba(0,0,0,.34), 0 0 22px rgba(23,139,255,.22);
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      font-family: "Plus Jakarta Sans", Inter, sans-serif;
+      color: var(--accent);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 auto;
+      max-width: 1120px;
+      min-height: 1.05em;
+      font-size: clamp(42px, 5vw, 72px);
+      line-height: .92;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      text-wrap: balance;
+    }
+
+    .typewriter-line {
+      display: inline;
+    }
+
+    .typewriter-text {
+      display: inline;
+    }
+
+    .typewriter-cursor {
+      display: inline-block;
+      width: .12em;
+      height: .78em;
+      margin-left: .09em;
+      translate: 0 .08em;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 24px rgba(23,139,255,.75);
+      animation: cursorBlink .78s steps(2, start) infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 42% { opacity: 1; }
+      43%, 100% { opacity: .12; }
+    }
+
+    .accent-period { color: var(--accent); }
+
+    .hero-description {
+      max-width: 760px;
+      margin: 20px auto 0;
+      color: rgba(255,255,255,.76);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .product-stage {
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      perspective: 1600px;
+      pointer-events: none;
+      scroll-margin-top: 110px;
+    }
+
+    .product-window {
+      position: relative;
+      z-index: 4;
+      width: min(1120px, 82vw);
+      border: 1px solid rgba(126,219,255,.22);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(14,18,22,.96), rgba(4,7,10,.94));
+      box-shadow: 0 46px 150px rgba(0,0,0,.72), 0 0 110px rgba(23,139,255,.16), inset 0 1px 0 rgba(255,255,255,.1);
+      overflow: hidden;
+      transform: translateZ(0) scale(.985);
+      transform-origin: 50% 42%;
+      filter: blur(0);
+      animation: mockupCinematicIn 1.15s cubic-bezier(.16,1,.3,1) .18s both;
+      transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease, border-color .5s ease, filter .5s ease;
+      cursor: zoom-in;
+      pointer-events: auto;
+    }
+
+    .product-window:hover {
+      transform: translateY(-10px) scale(1.025);
+      border-color: rgba(126,219,255,.5);
+      box-shadow: 0 56px 170px rgba(0,0,0,.78), 0 0 135px rgba(23,139,255,.24), inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    @keyframes mockupCinematicIn {
+      0% { opacity: 0; filter: blur(14px); transform: translateY(34px) scale(.955); }
+      58% { opacity: 1; filter: blur(2px); }
+      100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(.985); }
+    }
+
+    .mac-top {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+    }
+
+    .mac-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    .mac-dot.red { background: #ff5f57; }
+    .mac-dot.yellow { background: #ffbd2e; }
+    .mac-dot.green { background: #28c840; }
+
+    .mac-title {
+      margin-left: 8px;
+      color: rgba(255,255,255,.64);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .product-shot {
+      position: relative;
+      padding: 10px;
+      background: #03070b;
+    }
+
+    .screen-stack {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 13px;
+      background: #02060a;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .screen-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: translateX(-100%) scale(1.01);
+      filter: saturate(.9) contrast(1.03) brightness(.82);
+    }
+
+    .screen-frame.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      filter: saturate(1.04) contrast(1.05) brightness(.94);
+      z-index: 2;
+    }
+
+    .screen-frame.slide-in {
+      z-index: 4;
+      animation: screenSlideIn .86s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .screen-frame.slide-out {
+      z-index: 3;
+      animation: screenSlideOut .86s cubic-bezier(.65,0,.35,1) both;
+    }
+
+    @keyframes screenSlideIn {
+      0% { opacity: 0; filter: blur(4px) saturate(.9) contrast(1.03) brightness(.82); transform: translateX(-100%) scale(1.01); }
+      100% { opacity: 1; filter: saturate(1.04) contrast(1.05) brightness(.94); transform: translateX(0) scale(1); }
+    }
+
+    @keyframes screenSlideOut {
+      0% { opacity: 1; filter: saturate(1.04) contrast(1.05) brightness(.94); transform: translateX(0) scale(1); }
+      100% { opacity: 0; filter: blur(3px) saturate(.9) contrast(1.03) brightness(.82); transform: translateX(100%) scale(.99); }
+    }
+
+    .source-strip {
+      position: relative;
+      z-index: 8;
+      width: min(920px, calc(100% - 40px));
+      margin: 82px auto 26px;
+      padding: 26px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 34px;
+      background:
+        radial-gradient(560px 160px at 50% 0%, rgba(23,139,255,.18), transparent 72%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.018));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 30px 90px rgba(0,0,0,.38);
+      overflow: hidden;
+    }
+
+    .source-strip::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(23,139,255,.34), transparent);
+      opacity: .42;
+      transform: translateY(-50%);
+    }
+
+    .source-strip-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      text-align: center;
+      color: rgba(255,255,255,.48);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .source-strip-head span {
+      color: var(--accent);
+    }
+
+    .source-strip-head b {
+      color: rgba(255,255,255,.36);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .source-platforms {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+    }
+
+    .platform-card {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 108px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 42px rgba(0,0,0,.26);
+      overflow: hidden;
+      transition: transform .35s ease, border-color .35s ease, background .35s ease;
+    }
+
+    .platform-card::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(180px 90px at 50% 0%, rgba(23,139,255,.18), transparent 72%);
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+
+    .platform-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(23,139,255,.34);
+      background: linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.03));
+    }
+
+    .platform-card:hover::after {
+      opacity: 1;
+    }
+
+    .platform-card img {
+      position: relative;
+      z-index: 1;
+      width: min(190px, 92%);
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,.34));
+    }
+
+    section {
+      padding: 84px 0;
+      position: relative;
+    }
+
+    #projects {
+      padding: 52px 0 34px;
+    }
+
+    #beta {
+      padding: 34px 0 84px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      align-items: end;
+      gap: 28px;
+      margin-bottom: 24px;
+    }
+
+    .label {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(23,139,255,.24);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(23,139,255,.07);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 14px 0 0;
+      font-size: clamp(34px, 5vw, 70px);
+      line-height: .96;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .section-copy {
+      margin: 0;
+      color: rgba(255,255,255,.68);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .showcase {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)), rgba(7,11,10,.68);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .showcase-main {
+      min-height: 470px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #07100f;
+    }
+
+    .showcase-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .showcase-side {
+      display: grid;
+      gap: 12px;
+    }
+
+    .beta-video-panel {
+      position: relative;
+      width: min(1060px, 100%);
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 34px;
+      background:
+        radial-gradient(700px 260px at 50% 0%, rgba(23,139,255,.18), transparent 68%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 34px 100px rgba(0,0,0,.36);
+    }
+
+    .beta-video-frame {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 16 / 9;
+      min-height: 320px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.045) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(23,139,255,.22), transparent 52%),
+        #03070b;
+      background-size: 74px 74px, 74px 74px, auto, auto;
+    }
+
+    .beta-video-frame video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+    }
+
+    .beta-video-soon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .beta-video-soon strong {
+      font-size: clamp(54px, 8vw, 118px);
+      line-height: .85;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    .beta-video-soon span {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .side-card,
+    .tile,
+    .quote,
+    .leaderboard {
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)), rgba(7,11,10,.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .side-card {
+      padding: 22px;
+      min-height: 145px;
+    }
+
+    .side-card h3,
+    .tile h3 {
+      margin: 14px 0 8px;
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+    }
+
+    .side-card p,
+    .tile p,
+    .quote p {
+      margin: 0;
+      color: rgba(255,255,255,.66);
+      line-height: 1.62;
+      font-size: 14px;
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      color: var(--bg);
+      background: var(--accent);
+      font-weight: 900;
+      box-shadow: 0 16px 38px rgba(23,139,255,.22);
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .8fr;
+      grid-auto-rows: 238px;
+      gap: 16px;
+    }
+
+    .tile {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+    }
+
+    .tile.big { grid-row: span 2; }
+    .tile.wide { grid-column: span 2; }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: -34% -18% auto auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(23,139,255,.18), transparent 68%);
+      transition: transform .35s ease;
+    }
+
+    .tile:hover::before { transform: translate(-20px, 18px) scale(1.18); }
+
+    .tile > * { position: relative; z-index: 1; }
+
+    .mini-shot {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      height: 210px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 22px;
+      background-image: linear-gradient(180deg, rgba(7,11,10,.04), rgba(7,11,10,.82)), url("/docs/design/fetchr-redesign/site/target_queue-lite.jpg");
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 18px 60px rgba(0,0,0,.42);
+    }
+
+    .beta-grid {
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .leaderboard {
+      padding: 12px;
+    }
+
+    .rank {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 76px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      background: rgba(255,255,255,.035);
+      margin-bottom: 10px;
+    }
+
+    .rank:last-child { margin-bottom: 0; }
+
+    .rank-index {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      color: var(--bg);
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .rank b { display: block; }
+    .rank span { color: rgba(255,255,255,.58); font-size: 13px; }
+    .rank-value { font-weight: 900; white-space: nowrap; }
+
+    #beta .section-head {
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    #beta .top-streamers-head {
+      width: min(1060px, 100%);
+      margin: 0 auto 14px;
+    }
+
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      width: min(1060px, 100%);
+      margin: 0 auto 30px;
+    }
+
+    .stat-card {
+      min-height: 118px;
+      padding: 22px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.18), transparent 44%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        rgba(7,11,10,.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .stat-card span {
+      display: block;
+      margin-bottom: 10px;
+      color: rgba(255,255,255,.58);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      color: #fff;
+      font-size: clamp(31px, 3vw, 46px);
+      line-height: .9;
+      letter-spacing: -0.055em;
+    }
+
+    .top-streamers {
+      display: block;
+      width: min(1060px, 100%);
+      margin: 0 auto;
+    }
+
+    .podium {
+      height: 520px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 18px;
+      padding: 26px 22px 22px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012)),
+        rgba(7,11,10,.66);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .podium-card {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      height: var(--bar-height);
+      min-height: 250px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 50% 12%, var(--rank-glow), transparent 36%),
+        linear-gradient(180deg, var(--rank-top), var(--rank-bottom));
+      box-shadow: 0 26px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08);
+      transition: transform .35s ease, filter .35s ease;
+    }
+
+    .podium-card:hover {
+      transform: translateY(-8px);
+      filter: brightness(1.08);
+    }
+
+    .podium-card.first {
+      order: 2;
+      --rank-top: rgba(255, 208, 88, .34);
+      --rank-bottom: rgba(92, 60, 7, .86);
+      --rank-glow: rgba(255, 205, 74, .5);
+      --rank-border: rgba(255, 216, 96, .72);
+      border-color: var(--rank-border);
+    }
+    .podium-card.second {
+      order: 1;
+      --rank-top: rgba(224, 234, 255, .26);
+      --rank-bottom: rgba(48, 58, 77, .88);
+      --rank-glow: rgba(214, 232, 255, .38);
+      --rank-border: rgba(228, 238, 255, .58);
+      border-color: var(--rank-border);
+    }
+    .podium-card.third {
+      order: 3;
+      --rank-top: rgba(205, 126, 65, .32);
+      --rank-bottom: rgba(77, 39, 22, .88);
+      --rank-glow: rgba(214, 124, 62, .38);
+      --rank-border: rgba(220, 132, 68, .58);
+      border-color: var(--rank-border);
+    }
+
+    .podium-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .32;
+      filter: saturate(1.06) contrast(1.05);
+    }
+
+    .podium-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(3,5,12,.2) 0%, rgba(3,5,12,.38) 42%, rgba(3,5,12,.88) 100%),
+        linear-gradient(90deg, rgba(255,255,255,.1), transparent 24%, transparent 76%, rgba(255,255,255,.08));
+    }
+
+    .medal {
+      position: absolute;
+      z-index: 3;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rank-border), rgba(255,255,255,.2));
+      box-shadow: 0 18px 44px rgba(0,0,0,.28);
+      font-weight: 900;
+      font-size: 22px;
+    }
+
+    .streamer-avatar {
+      position: absolute;
+      z-index: 3;
+      top: 18px;
+      right: 18px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,.72);
+      box-shadow: 0 18px 44px rgba(0,0,0,.36);
+      background: rgba(5,10,20,.82);
+    }
+
+    .streamer-avatar[hidden],
+    .podium-media[hidden] {
+      display: none;
+    }
+
+    .podium-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 74px 18px 30px;
+      text-align: center;
+    }
+
+    .podium-content h3 {
+      margin: 0;
+      max-width: 100%;
+      font-size: clamp(24px, 2.7vw, 42px);
+      line-height: .95;
+      letter-spacing: -0.04em;
+      overflow-wrap: anywhere;
+    }
+
+    .download-badge {
+      display: inline-flex;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(23,139,255,.22);
+      border: 1px solid rgba(64,164,255,.3);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .testimonial-carousel {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .testimonial-carousel.is-empty {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .testimonial-carousel.is-empty .carousel-btn,
+    .testimonial-carousel.is-empty .carousel-dots {
+      display: none;
+    }
+
+    .testimonial-carousel.is-empty .testimonial-window,
+    .testimonial-carousel.is-empty .review-actions {
+      grid-column: 1;
+    }
+
+    .carousel-btn[data-review-prev] {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .carousel-btn[data-review-next] {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .carousel-btn {
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      background: rgba(255,255,255,.055);
+      color: #fff;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .carousel-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(64,164,255,.38);
+      background: rgba(23,139,255,.14);
+    }
+
+    .testimonial-window {
+      overflow: hidden;
+      border-radius: 34px;
+    }
+
+    .carousel-dots {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: -4px;
+    }
+
+    .carousel-dots button {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,.3);
+      cursor: pointer;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .carousel-dots button.active {
+      background: var(--accent);
+      transform: scale(1.25);
+    }
+
+    .testimonial-track {
+      display: flex;
+      transition: transform .42s ease;
+    }
+
+    .testimonial-slide {
+      min-width: 100%;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.2), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        rgba(7,11,10,.76);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .testimonial-person {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-person img,
+    .testimonial-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.24);
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      box-shadow: 0 16px 44px rgba(23,139,255,.2);
+    }
+
+    .testimonial-avatar {
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .testimonial-person b {
+      display: block;
+      font-size: 19px;
+      line-height: 1.08;
+    }
+
+    .testimonial-person small {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255,255,255,.58);
+    }
+
+    .company {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 8px 11px;
+      border: 1px solid rgba(64,164,255,.24);
+      border-radius: 999px;
+      color: #9dccff;
+      background: rgba(23,139,255,.08);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .testimonial-slide p {
+      margin: 0;
+      max-width: none;
+      color: rgba(255,255,255,.74);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.015em;
+      overflow-wrap: anywhere;
+    }
+
+    .testimonial-slide {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .testimonial-slide:hover {
+      border-color: rgba(64,164,255,.34);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.28), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+        rgba(7,11,10,.82);
+    }
+
+    .review-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+
+    .review-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 7px 10px;
+      border: 1px solid rgba(64,164,255,.24);
+      border-radius: 999px;
+      color: rgba(255,255,255,.72);
+      background: rgba(23,139,255,.07);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .review-media,
+    .review-proof-preview {
+      display: block;
+      margin-top: 20px;
+      border: 1px solid rgba(64,164,255,.22);
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(0,0,0,.26);
+      cursor: zoom-in;
+    }
+
+    .review-media {
+      position: relative;
+      width: 220px;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      margin-top: 16px;
+      border-radius: 16px;
+    }
+
+    .review-media::after {
+      content: "Открыть";
+      position: absolute;
+      right: 9px;
+      bottom: 9px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(0,0,0,.58);
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: 11px;
+      font-weight: 900;
+      pointer-events: none;
+    }
+
+    .review-media img,
+    .review-media video {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      display: block;
+      object-fit: cover;
+      background: #020405;
+    }
+
+    .review-proof-preview img,
+    .review-proof-preview video {
+      width: 100%;
+      max-height: 430px;
+      display: block;
+      object-fit: cover;
+      background: #020405;
+    }
+
+    .review-proof-preview {
+      margin-top: 10px;
+      cursor: default;
+    }
+
+    .review-proof-preview[hidden] {
+      display: none;
+    }
+
+    .review-proof-preview figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 11px 14px;
+      color: rgba(255,255,255,.66);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .review-proof-preview a {
+      color: #9dccff;
+    }
+
+    .review-actions {
+      grid-column: 2;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .testimonial-carousel .review-actions {
+      grid-column: 2;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .review-empty {
+      padding: 34px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      color: rgba(255,255,255,.66);
+      background: rgba(255,255,255,.035);
+      text-align: center;
+    }
+
+    [data-route-page] {
+      display: none;
+      min-height: 78vh;
+      padding-top: 150px;
+    }
+
+    body.route-reviews main > section:not([data-route-page]),
+    body.route-write-review main > section:not([data-route-page]),
+    html.route-reviews main > section:not([data-route-page]),
+    html.route-write-review main > section:not([data-route-page]) {
+      display: none;
+    }
+
+    body.route-reviews [data-route-page="reviews"],
+    body.route-write-review [data-route-page="write-review"],
+    html.route-reviews [data-route-page="reviews"],
+    html.route-write-review [data-route-page="write-review"] {
+      display: block;
+    }
+
+    .review-page-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      margin-bottom: 30px;
+    }
+
+    .review-page-head h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(44px, 6vw, 92px);
+      line-height: .9;
+      letter-spacing: -0.055em;
+    }
+
+    .review-form-shell .review-page-head h1 {
+      max-width: 520px;
+      font-size: clamp(26px, 3vw, 42px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .review-page-head p {
+      margin: 14px 0 0;
+      max-width: 680px;
+      color: rgba(255,255,255,.68);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      max-width: none;
+    }
+
+    .review-card {
+      display: block;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      color: inherit;
+      text-decoration: none;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.17), transparent 34%),
+        rgba(255,255,255,.035);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .review-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(64,164,255,.34);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.24), transparent 34%),
+        rgba(255,255,255,.05);
+    }
+
+    .review-card p {
+      margin: 14px 0 0;
+      color: rgba(255,255,255,.72);
+      font-size: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .review-body {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .review-body p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .review-body b {
+      color: #ddecff;
+    }
+
+    .review-form-shell {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.18), transparent 32%),
+        rgba(255,255,255,.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .review-form {
+      display: grid;
+      gap: 16px;
+      padding: 28px;
+    }
+
+    .review-page-head.review-wizard-head {
+      padding: 28px 28px 0;
+      margin-bottom: 0;
+    }
+
+    .review-wizard-progress {
+      display: flex;
+      gap: 7px;
+      padding: 0 28px 8px;
+    }
+
+    .review-wizard-progress span {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      transform-origin: left center;
+      transition: background .28s ease, box-shadow .28s ease, transform .28s ease;
+    }
+
+    .review-wizard-progress span.active {
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(23,139,255,.46);
+      animation: progressGlow .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .review-step {
+      display: none;
+      min-height: 430px;
+      align-content: start;
+      gap: 18px;
+      transform-origin: 50% 24px;
+    }
+
+    .review-step.active {
+      display: grid;
+    }
+
+    .review-step.step-enter-forward {
+      animation: stepEnterForward .58s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .review-step.step-enter-back {
+      animation: stepEnterBack .58s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    @keyframes stepEnterForward {
+      0% {
+        opacity: 0;
+        transform: translateX(34px) translateY(10px) scale(.985);
+        filter: blur(10px);
+      }
+      58% {
+        opacity: 1;
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes stepEnterBack {
+      0% {
+        opacity: 0;
+        transform: translateX(-34px) translateY(10px) scale(.985);
+        filter: blur(10px);
+      }
+      58% {
+        opacity: 1;
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes progressGlow {
+      0% {
+        transform: scaleX(.35);
+        box-shadow: 0 0 0 rgba(23,139,255,0);
+      }
+      100% {
+        transform: scaleX(1);
+        box-shadow: 0 0 18px rgba(23,139,255,.46);
+      }
+    }
+
+    .review-step h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1;
+      letter-spacing: -0.045em;
+    }
+
+    .review-step-copy {
+      margin: 0;
+      max-width: 620px;
+      color: rgba(255,255,255,.66);
+      line-height: 1.6;
+    }
+
+    .review-wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .review-wizard-actions .btn[disabled] {
+      opacity: .45;
+      pointer-events: none;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 7px;
+    }
+
+    .star-rating button {
+      width: 58px;
+      height: 58px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px;
+      color: rgba(255,255,255,.34);
+      background: rgba(255,255,255,.08);
+      font-size: 34px;
+      cursor: pointer;
+      transition: transform .18s ease, color .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .star-rating button.active,
+    .star-rating button:hover {
+      color: #fff;
+      border-color: rgba(23,139,255,.56);
+      background: rgba(23,139,255,.28);
+      transform: translateY(-2px);
+    }
+
+    .experience-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      max-width: 960px;
+      margin-top: 22px;
+    }
+
+    .experience-field textarea {
+      min-height: 360px;
+      border-radius: 8px;
+      padding: 24px 26px;
+      font-size: 22px;
+      line-height: 1.45;
+      font-weight: 700;
+      resize: vertical;
+    }
+
+    .experience-field .word-counter {
+      margin-top: 6px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .review-upload-field {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .review-upload-field .upload-control {
+      width: auto;
+      min-height: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(23,139,255,.14);
+      border-color: rgba(64,164,255,.32);
+      color: #ddecff;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .review-upload-field .review-proof-preview {
+      width: 132px;
+      min-height: 96px;
+      margin: 0;
+      border-radius: 14px;
+      cursor: zoom-in;
+    }
+
+    .review-upload-field .review-proof-preview img,
+    .review-upload-field .review-proof-preview video {
+      width: 100%;
+      height: 74px;
+      max-height: none;
+      object-fit: cover;
+    }
+
+    .review-upload-field .review-proof-preview figcaption {
+      padding: 7px 8px;
+      gap: 6px;
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .review-upload-field .review-proof-preview figcaption span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .id-field-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .id-state {
+      min-height: 22px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .id-state.error { color: #ff8b8b; }
+    .id-state.success { color: #76ffb0; }
+
+    .field input.invalid {
+      border-color: rgba(255,83,83,.72);
+      box-shadow: 0 0 0 4px rgba(255,83,83,.12);
+    }
+
+    .field input.valid {
+      border-color: rgba(118,255,176,.62);
+      box-shadow: 0 0 0 4px rgba(118,255,176,.1);
+    }
+
+    .id-tutorial {
+      margin: 6px 0 0;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(0,0,0,.24);
+    }
+
+    .id-tutorial figcaption {
+      padding: 12px 14px;
+      color: rgba(255,255,255,.72);
+      font-weight: 900;
+    }
+
+    .id-tutorial img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      background: #020405;
+    }
+
+    .review-preview-card {
+      padding: 24px;
+      border: 1px solid rgba(64,164,255,.2);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(23,139,255,.18), transparent 34%),
+        rgba(255,255,255,.035);
+    }
+
+    .review-preview-card h3 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .review-preview-card dl {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0 0;
+    }
+
+    .review-preview-card dt {
+      color: #9dccff;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .review-preview-card dd {
+      margin: 3px 0 0;
+      color: rgba(255,255,255,.76);
+      line-height: 1.6;
+    }
+
+    .review-thanks {
+      display: grid;
+      place-items: center;
+      min-height: 430px;
+      text-align: center;
+    }
+
+    .review-thanks h2 {
+      font-size: clamp(34px, 5vw, 72px);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label,
+    .check-row {
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input,
+    .field select,
+    .field textarea,
+    .upload-control {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 14px 15px;
+      color: #fff;
+      background: rgba(0,0,0,.34);
+      outline: none;
+      font: inherit;
+    }
+
+    .upload-control {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 50px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .upload-control input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .field textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    .review-form .experience-field textarea {
+      min-height: 360px;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(64,164,255,.55);
+      box-shadow: 0 0 0 4px rgba(23,139,255,.12);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.45;
+    }
+
+    .check-row input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .form-hint,
+    .word-counter,
+    .review-form-status {
+      color: rgba(255,255,255,.56);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .review-form-status.error {
+      color: #ff8b8b;
+    }
+
+    .review-form-status.success {
+      color: #76ffb0;
+    }
+
+    .quotes {
+      display: grid;
+      gap: 16px;
+    }
+
+    .quote {
+      padding: 22px;
+    }
+
+    .avatar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .avatar-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      color: var(--bg);
+      font-weight: 900;
+    }
+
+    .avatar small {
+      display: block;
+      color: rgba(255,255,255,.58);
+      margin-top: 2px;
+    }
+
+    .cta {
+      padding-bottom: 110px;
+    }
+
+    .cta-box {
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 54px 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 38px;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(23,139,255,.22), transparent 34%),
+        radial-gradient(circle at 50% 105%, rgba(23,139,255,.22), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        rgba(7,11,10,.76);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .cta-box h2 {
+      max-width: 850px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-box p {
+      max-width: 640px;
+      margin: 20px auto 0;
+      color: rgba(255,255,255,.68);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .cta-box .hero-actions { justify-content: center; }
+
+    footer {
+      padding: 30px 0 44px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: rgba(255,255,255,.56);
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-layout {
+        gap: 34px;
+      }
+      .product-stage {
+        min-height: 0;
+      }
+      .product-window {
+        width: min(980px, 100%);
+      }
+      .product-window:hover {
+        transform: translateY(-8px) scale(1.02);
+      }
+      .source-strip {
+        position: static;
+        transform: none;
+        width: min(920px, calc(100% - 40px));
+        margin: 64px auto 22px;
+      }
+      .section-head,
+      .showcase,
+      .beta-grid,
+      .top-streamers {
+        grid-template-columns: 1fr;
+      }
+      .podium { height: 480px; }
+    }
+
+    @media (max-width: 820px) {
+      .desktop-nav,
+      .nav-actions .btn:not(.btn-primary) {
+        display: none;
+      }
+      .menu-btn {
+        display: inline-grid;
+        place-items: center;
+      }
+      .nav-shell {
+        grid-template-columns: auto 1fr auto;
+        width: calc(100% - 16px);
+      }
+      .nav-actions {
+        justify-content: end;
+      }
+      .grid-lines { display: none; }
+      .hero {
+        padding-top: 110px;
+      }
+      .liquid-card {
+        width: min(420px, 100%);
+        height: auto;
+        min-height: 72px;
+      }
+      .bento {
+        grid-template-columns: 1fr 1fr;
+      }
+      .tile.big,
+      .tile.wide {
+        grid-column: auto;
+        grid-row: auto;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .container { width: min(100% - 24px, var(--max)); }
+      .site-header { padding: 10px 8px; }
+      .nav-shell {
+        border-radius: 22px;
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        position: relative;
+        min-height: 58px;
+        width: calc(100vw - 16px);
+        max-width: calc(100vw - 16px);
+        padding: 8px 10px 8px 14px;
+      }
+      .nav-actions {
+        position: static;
+        grid-column: auto;
+        justify-self: end;
+        transform: none;
+      }
+      .menu-btn {
+        display: grid !important;
+        place-items: center;
+        position: relative;
+        top: auto;
+        right: auto;
+        z-index: 1;
+        background: rgba(23, 139, 255, .22);
+        border-color: rgba(23, 139, 255, .5);
+      }
+      .brand-logo { font-size: 20px; }
+      .brand {
+        min-width: 0;
+      }
+      .nav-actions .btn-primary {
+        display: none;
+      }
+      .mobile-menu {
+        padding: 26px 18px;
+      }
+      .mobile-links {
+        width: min(100%, 360px);
+        gap: 12px;
+        font-size: clamp(28px, 9vw, 44px);
+      }
+      .mobile-links a {
+        display: block;
+        padding: 16px 12px;
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 22px;
+        background: rgba(255,255,255,.045);
+      }
+      .hero {
+        min-height: auto;
+        padding: 94px 0 46px;
+      }
+      .hero-layout { gap: 24px; }
+      .hero-copy {
+        width: 100%;
+        max-width: min(350px, calc(100vw - 24px));
+        min-width: 0;
+      }
+      .liquid-card {
+        width: min(100%, 318px);
+        min-height: 66px;
+        grid-template-columns: 50px minmax(0, 1fr);
+        column-gap: 11px;
+        padding: 9px 14px 9px 9px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        transform: none;
+        border-radius: 22px;
+        justify-self: center;
+      }
+      .glass-avatar {
+        width: 46px;
+        height: 46px;
+      }
+      .rachel-logo {
+        width: 50px;
+        height: 50px;
+      }
+      .glass-title {
+        font-size: 12.5px;
+        line-height: 1.18;
+        overflow-wrap: anywhere;
+      }
+      .glass-text {
+        font-size: 12.5px;
+      }
+      h1 {
+        max-width: min(350px, 100%);
+        min-height: 2em;
+        font-size: clamp(26px, 8vw, 32px);
+        line-height: .96;
+        letter-spacing: -0.035em;
+      }
+      .hero-description {
+        font-size: 14px;
+        line-height: 1.55;
+        max-width: 350px;
+      }
+      .hero-actions {
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .hero-actions .btn {
+        width: 100%;
+        flex: 0 0 auto;
+        min-height: 46px;
+        padding: 0 14px;
+      }
+      .stream-wall {
+        inset: 76px -42vw 0;
+        opacity: .22;
+      }
+      .stream-track {
+        gap: 14px;
+      }
+      .stream-card-bg {
+        width: 220px;
+        height: 124px;
+        border-radius: 18px;
+      }
+      .product-stage {
+        min-height: 0;
+      }
+      .product-window {
+        width: min(100%, calc(100vw - 24px));
+        border-radius: 14px;
+      }
+      .product-window:hover {
+        transform: translateY(-6px) scale(1.018);
+      }
+      .product-shot { padding: 8px; }
+      .mac-top { height: 32px; }
+      .mac-title { font-size: 11px; }
+      .screen-stack { border-radius: 11px; }
+      .source-strip {
+        width: calc(100% - 24px);
+        margin-top: 38px;
+        padding: 14px;
+        border-radius: 26px;
+      }
+      .source-strip-head {
+        flex-direction: column;
+        gap: 5px;
+        padding: 0 18px;
+      }
+      .source-platforms {
+        grid-template-columns: 1fr;
+      }
+      .stats-strip {
+        grid-template-columns: 1fr;
+      }
+      .platform-card {
+        min-height: 82px;
+        border-radius: 20px;
+      }
+      .platform-card img {
+        width: min(170px, 84%);
+      }
+      section { padding: 58px 0; }
+      #projects { padding: 42px 0 24px; }
+      #beta { padding: 24px 0 58px; }
+      .section-head {
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      h2 {
+        font-size: clamp(32px, 11vw, 46px);
+        line-height: .98;
+      }
+      .section-copy {
+        font-size: 15px;
+        line-height: 1.55;
+      }
+      .beta-video-panel,
+      .podium,
+      .cta-box,
+      .review-form-shell {
+        border-radius: 24px;
+      }
+      .beta-video-frame {
+        min-height: 190px;
+      }
+      .beta-video-soon strong {
+        font-size: clamp(46px, 15vw, 74px);
+      }
+      .showcase-main { min-height: 280px; }
+      .bento { grid-template-columns: 1fr; }
+      .mini-shot { height: 150px; }
+      .rank {
+        grid-template-columns: 42px 1fr;
+      }
+      .rank-value { grid-column: 2; }
+      .podium {
+        height: auto;
+        min-height: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+      }
+      .podium-card.first,
+      .podium-card.second,
+      .podium-card.third {
+        order: initial;
+        height: auto;
+        min-height: 190px;
+        border-radius: 24px;
+      }
+      .podium-content {
+        padding: 64px 14px 22px;
+        gap: 10px;
+      }
+      .podium-content h3 {
+        font-size: clamp(25px, 9vw, 34px);
+      }
+      .medal {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+      }
+      .streamer-avatar {
+        width: 50px;
+        height: 50px;
+        top: 16px;
+        right: 16px;
+      }
+      .download-badge {
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+      .testimonial-carousel {
+        grid-template-columns: 46px 1fr 46px;
+        align-items: center;
+        gap: 8px;
+      }
+      .testimonial-window {
+        grid-column: 1 / -1;
+        order: 0;
+        border-radius: 24px;
+      }
+      .carousel-dots {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        order: 1;
+        margin-top: 2px;
+      }
+      .carousel-btn {
+        width: 46px;
+        height: 46px;
+        justify-self: center;
+      }
+      .carousel-btn[data-review-prev] {
+        grid-column: 1;
+        grid-row: 3;
+      }
+      .carousel-btn[data-review-next] {
+        grid-column: 3;
+        grid-row: 3;
+      }
+      .testimonial-carousel.is-empty {
+        max-width: 100%;
+      }
+      .testimonial-carousel.is-empty .testimonial-window,
+      .testimonial-carousel.is-empty .review-actions {
+        grid-column: 1 / -1;
+      }
+      .testimonial-carousel .review-actions {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr;
+        width: min(260px, 100%);
+        justify-self: center;
+      }
+      .testimonial-carousel .review-actions .btn {
+        width: 100%;
+      }
+      .testimonial-slide {
+        padding: 18px;
+        min-width: 100%;
+      }
+      .testimonial-slide .review-empty,
+      .review-empty {
+        padding: 22px 18px;
+        border-radius: 22px;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .testimonial-person {
+        align-items: flex-start;
+      }
+      .review-page-head,
+      .review-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      [data-route-page] {
+        padding-top: 92px;
+        min-height: 100svh;
+      }
+      html.route-reviews body,
+      html.route-write-review body,
+      body.route-reviews,
+      body.route-write-review {
+        background:
+          radial-gradient(circle at 60% 0%, rgba(23,139,255,.18), transparent 24rem),
+          #030504;
+      }
+      .review-page-head {
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .review-page-head h1 {
+        font-size: clamp(42px, 16vw, 64px);
+        line-height: .92;
+      }
+      .review-form-shell .review-page-head h1 {
+        font-size: clamp(28px, 9vw, 38px);
+      }
+      .review-page-head.review-wizard-head {
+        padding-top: 18px;
+      }
+      .review-page-head p {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .reviews-grid,
+      .experience-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .reviews-grid {
+        gap: 12px;
+      }
+      .review-card {
+        padding: 18px;
+        border-radius: 22px;
+      }
+      .review-card p,
+      .review-body p {
+        font-size: 14px;
+      }
+      .review-media {
+        width: 100%;
+        margin-top: 12px;
+      }
+      .review-form {
+        padding: 20px;
+        overflow: hidden;
+      }
+      .review-page-head.review-wizard-head {
+        padding: 20px 20px 0;
+      }
+      .review-wizard-progress {
+        padding: 0 20px 6px;
+        gap: 5px;
+      }
+      .review-step {
+        min-height: 0;
+        gap: 14px;
+      }
+      .review-step h2 {
+        font-size: clamp(28px, 10vw, 40px);
+      }
+      .review-step-copy {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .star-rating {
+        gap: 5px;
+      }
+      .star-rating button {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        font-size: 30px;
+      }
+      .id-field-row {
+        grid-template-columns: 1fr;
+      }
+      .id-field-row .btn {
+        width: 100%;
+      }
+      .experience-field textarea,
+      .review-upload-field .upload-control {
+        min-height: 0;
+      }
+      .review-form .experience-field textarea {
+        min-height: 240px;
+      }
+      .experience-field textarea {
+        padding: 18px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .review-upload-field .upload-control {
+        width: 100%;
+        min-height: 46px;
+      }
+      .review-upload-field .review-proof-preview {
+        width: 112px;
+        min-height: 88px;
+      }
+      .review-wizard-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 4;
+        margin: 8px -20px -20px;
+        padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+        background: linear-gradient(180deg, rgba(7,11,10,0), rgba(7,11,10,.94) 28%);
+      }
+      .review-wizard-actions .btn {
+        flex: 1 1 0;
+        min-height: 48px;
+        padding: 0 14px;
+      }
+      .review-preview-card {
+        padding: 18px;
+        border-radius: 22px;
+      }
+      .review-preview-card h3 {
+        font-size: 23px;
+      }
+      .field.full {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .container { width: min(100% - 18px, var(--max)); }
+      .site-header { padding: 8px 6px; }
+      .nav-shell {
+        min-height: 54px;
+        width: calc(100vw - 12px);
+        max-width: calc(100vw - 12px);
+        padding: 7px 9px 7px 12px;
+        border-radius: 20px;
+      }
+      .menu-btn {
+        width: 40px;
+        height: 40px;
+      }
+      .brand-logo { font-size: 18px; }
+      .hero { padding-top: 88px; }
+      .eyebrow {
+        margin-bottom: 12px;
+        font-size: 10px;
+        letter-spacing: .12em;
+      }
+      h1 {
+        font-size: clamp(24px, 9vw, 30px);
+      }
+      .hero-description {
+        font-size: 13.5px;
+      }
+      .hero-actions .btn {
+        flex-basis: 100%;
+      }
+      .liquid-card {
+        width: min(100%, 318px);
+      }
+      .product-window {
+        width: calc(100% + 18px);
+        max-width: none;
+        margin-left: -9px;
+        margin-right: -9px;
+      }
+      .mac-title {
+        max-width: 190px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .stats-strip {
+        gap: 10px;
+      }
+      .stat-card {
+        min-height: 96px;
+        padding: 18px 14px;
+        border-radius: 22px;
+      }
+      .stat-card strong {
+        font-size: 34px;
+      }
+      .podium-card.first,
+      .podium-card.second,
+      .podium-card.third {
+        min-height: 172px;
+      }
+      .download-badge {
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+      }
+      .testimonial-slide {
+        padding: 18px;
+      }
+      .testimonial-person img,
+      .testimonial-avatar {
+        width: 48px;
+        height: 48px;
+      }
+      .review-page-head h1 {
+        font-size: clamp(38px, 15vw, 54px);
+      }
+      .review-form-shell {
+        border-radius: 20px;
+      }
+      .review-form,
+      .review-page-head.review-wizard-head {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .review-wizard-progress {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .star-rating button {
+        width: 45px;
+        height: 45px;
+        font-size: 26px;
+      }
+      .review-wizard-actions {
+        margin-left: -16px;
+        margin-right: -16px;
+        margin-bottom: -20px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      footer .container {
+        display: grid;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .review-step.step-enter-forward,
+      .review-step.step-enter-back,
+      .review-wizard-progress span.active {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="/" aria-label="Fetchr">
+        <span class="brand-mark"></span>
+        <span class="brand-logo">Fetchr</span>
+      </a>
+      <div class="nav-actions">
+        <a class="btn" href="#projects">Демо</a>
+        <a class="btn btn-primary" href="/api/downloads/Fetchr-Setup-v0.2.4.exe" data-action="download-app" download>Скачать
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <button class="menu-btn" type="button" aria-label="Открыть меню" aria-controls="mobileMenu" aria-expanded="false">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-close" type="button" aria-label="Закрыть меню">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="mobile-links" aria-label="Мобильная навигация">
+      <a href="#projects">Демо</a>
+      <a href="#beta">Топ стримеры</a>
+      <a href="/reviews">Отзывы</a>
+      <a href="/api/downloads/Fetchr-Setup-v0.2.4.exe" data-action="download-app" download>Скачать</a>
+    </nav>
+  </div>
+
+  <main id="top">
+    <section class="hero" aria-label="Fetchr hero">
+      <div class="video-fallback" aria-hidden="true"></div>
+      <div class="stream-wall" aria-hidden="true">
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:0"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_kaicenat-440x248.jpg?vod=1" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>KaiCenat</b><span>VOD · 1 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:37"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_xqc-440x248.jpg?vod=2" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>xQc</b><span>VOD · 2 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:74"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ibai-440x248.jpg?vod=3" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ibai</b><span>VOD · 3 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:111"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ninja-440x248.jpg?vod=4" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Ninja</b><span>VOD · 4 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:148"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_auronplay-440x248.jpg?vod=5" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>auronplay</b><span>VOD · 5 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:185"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_thegrefg-440x248.jpg?vod=6" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>TheGrefg</b><span>VOD · 6 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:222"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_rubius-440x248.jpg?vod=7" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Rubius</b><span>VOD · 7 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:259"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_shroud-440x248.jpg?vod=8" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>shroud</b><span>VOD · 1 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:296"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_tfue-440x248.jpg?vod=9" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Tfue</b><span>VOD · 2 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:333"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_pokimane-440x248.jpg?vod=10" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>pokimane</b><span>VOD · 3 дн. назад · 4:55:01</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:23"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_summit1g-440x248.jpg?vod=11" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>summit1g</b><span>VOD · 4 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:60"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_tarik-440x248.jpg?vod=12" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>tarik</b><span>VOD · 5 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:97"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_jynxzi-440x248.jpg?vod=13" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Jynxzi</b><span>VOD · 6 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:134"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ishowspeed-440x248.jpg?vod=14" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>IShowSpeed</b><span>VOD · 7 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:171"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_quackity-440x248.jpg?vod=15" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Quackity</b><span>VOD · 1 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:208"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_hasanabi-440x248.jpg?vod=16" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>HasanAbi</b><span>VOD · 2 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:245"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_loud_coringa-440x248.jpg?vod=17" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>loud_coringa</b><span>VOD · 3 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:282"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_gaules-440x248.jpg?vod=18" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>gaules</b><span>VOD · 4 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:319"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_sodapoppin-440x248.jpg?vod=19" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>sodapoppin</b><span>VOD · 5 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:356"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_adinross-440x248.jpg?vod=20" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>AdinRoss</b><span>VOD · 6 дн. назад · 7:11:34</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:46"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_elmariana-440x248.jpg?vod=21" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ElMariana</b><span>VOD · 7 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:83"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_rivers_gg-440x248.jpg?vod=22" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Rivers_gg</b><span>VOD · 1 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:120"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_elspreen-440x248.jpg?vod=23" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ElSpreen</b><span>VOD · 2 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:157"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_lirik-440x248.jpg?vod=24" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>LIRIK</b><span>VOD · 3 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:194"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_mizkif-440x248.jpg?vod=25" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Mizkif</b><span>VOD · 4 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:231"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_nickeh30-440x248.jpg?vod=26" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>NickEh30</b><span>VOD · 5 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:268"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_nickmercs-440x248.jpg?vod=27" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Nickmercs</b><span>VOD · 6 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:305"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_myth-440x248.jpg?vod=28" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Myth</b><span>VOD · 7 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:342"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ludwig-440x248.jpg?vod=29" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Ludwig</b><span>VOD · 1 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:19"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_sykkuno-440x248.jpg?vod=30" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Sykkuno</b><span>VOD · 2 дн. назад · 2:06:48</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:69"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_theprimeagen-440x248.jpg?vod=31" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ThePrimeagen</b><span>VOD · 3 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:106"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_fps_shaka-440x248.jpg?vod=32" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>fps_shaka</b><span>VOD · 4 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:143"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_k4sen-440x248.jpg?vod=33" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>k4sen</b><span>VOD · 5 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:180"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_stylishnoob4-440x248.jpg?vod=34" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>stylishnoob4</b><span>VOD · 6 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:217"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_s1mple-440x248.jpg?vod=35" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>s1mple</b><span>VOD · 7 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:254"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_nickmercs-440x248.jpg?vod=36" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>NICKMERCS</b><span>VOD · 1 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:291"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_cohhcarnage-440x248.jpg?vod=37" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>CohhCarnage</b><span>VOD · 2 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:328"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_asmongold-440x248.jpg?vod=38" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Asmongold</b><span>VOD · 3 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:5"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_caseoh_-440x248.jpg?vod=39" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>CaseOh</b><span>VOD · 4 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:42"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_stableronaldo-440x248.jpg?vod=40" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>StableRonaldo</b><span>VOD · 5 дн. назад · 3:42:18</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:92"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_tommyinnit-440x248.jpg?vod=41" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>TommyInnit</b><span>VOD · 6 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:129"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_tubbo-440x248.jpg?vod=42" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Tubbo</b><span>VOD · 7 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:166"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ranboolive-440x248.jpg?vod=43" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>RanbooLive</b><span>VOD · 1 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:203"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_dream-440x248.jpg?vod=44" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Dream</b><span>VOD · 2 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:240"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_georgenotfound-440x248.jpg?vod=45" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>GeorgeNotFound</b><span>VOD · 3 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:277"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_sapnap-440x248.jpg?vod=46" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Sapnap</b><span>VOD · 4 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:314"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_foolish-440x248.jpg?vod=47" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Foolish</b><span>VOD · 5 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:351"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_philza-440x248.jpg?vod=48" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Philza</b><span>VOD · 6 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:28"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_karljacobs-440x248.jpg?vod=49" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>KarlJacobs</b><span>VOD · 7 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:65"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_wilbursoot-440x248.jpg?vod=50" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>WilburSoot</b><span>VOD · 1 дн. назад · 2:17:06</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:115"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_arigameplays-440x248.jpg?vod=51" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>AriGameplays</b><span>VOD · 2 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:152"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_amouranth-440x248.jpg?vod=52" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Amouranth</b><span>VOD · 3 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:189"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_loserfruit-440x248.jpg?vod=53" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Loserfruit</b><span>VOD · 4 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:226"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_kyedae-440x248.jpg?vod=54" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Kyedae</b><span>VOD · 5 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:263"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_valkyrae-440x248.jpg?vod=55" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Valkyrae</b><span>VOD · 6 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:300"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_quarterjade-440x248.jpg?vod=56" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>QuarterJade</b><span>VOD · 7 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:337"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_fuslie-440x248.jpg?vod=57" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>fuslie</b><span>VOD · 1 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:14"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_lilypichu-440x248.jpg?vod=58" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>LilyPichu</b><span>VOD · 2 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:51"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_disguisedtoast-440x248.jpg?vod=59" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>DisguisedToast</b><span>VOD · 3 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:88"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_scarra-440x248.jpg?vod=60" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Scarra</b><span>VOD · 4 дн. назад · 5:08:44</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:138"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_mongraal-440x248.jpg?vod=61" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Mongraal</b><span>VOD · 5 дн. назад · 6:02:10</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:175"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_clix-440x248.jpg?vod=62" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Clix</b><span>VOD · 6 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:212"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_bugha-440x248.jpg?vod=63" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Bugha</b><span>VOD · 7 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:249"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_mrsavage-440x248.jpg?vod=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>MrSavage</b><span>VOD · 1 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:286"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_benjyfishy-440x248.jpg?vod=65" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>benjyfishy</b><span>VOD · 2 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:323"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_nadeshot-440x248.jpg?vod=66" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Nadeshot</b><span>VOD · 3 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:0"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_timthetatman-440x248.jpg?vod=67" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>TimTheTatman</b><span>VOD · 4 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:37"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_drdisrespect-440x248.jpg?vod=68" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>DrDisrespect</b><span>VOD · 5 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:74"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_couragejd-440x248.jpg?vod=69" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>CourageJD</b><span>VOD · 6 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:111"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_swagg-440x248.jpg?vod=70" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Swagg</b><span>VOD · 7 дн. назад · 1:56:30</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:161"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_aydan-440x248.jpg?vod=71" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Aydan</b><span>VOD · 1 дн. назад · 3:14:27</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:198"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_huskerrs-440x248.jpg?vod=72" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>HusKerrs</b><span>VOD · 2 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:235"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_symfuhny-440x248.jpg?vod=73" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Symfuhny</b><span>VOD · 3 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:272"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_annoyingtv-440x248.jpg?vod=74" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>AnnoyingTV</b><span>VOD · 4 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:309"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_agent00-440x248.jpg?vod=75" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Agent00</b><span>VOD · 5 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:346"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_brucedropemoff-440x248.jpg?vod=76" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>BruceDropEmOff</b><span>VOD · 6 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:23"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_yourrage-440x248.jpg?vod=77" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>YourRAGE</b><span>VOD · 7 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:60"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_fanum-440x248.jpg?vod=78" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Fanum</b><span>VOD · 1 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:97"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_dukedennis-440x248.jpg?vod=79" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>DukeDennis</b><span>VOD · 2 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:134"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_extraemily-440x248.jpg?vod=80" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ExtraEmily</b><span>VOD · 3 дн. назад · 4:21:12</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:184"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_ironmouse-440x248.jpg?vod=81" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Ironmouse</b><span>VOD · 4 дн. назад · 1:38:09</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:221"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_vei-440x248.jpg?vod=82" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>VEI</b><span>VOD · 5 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:258"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_nyanners-440x248.jpg?vod=83" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Nyanners</b><span>VOD · 6 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:295"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_projektmelody-440x248.jpg?vod=84" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>ProjektMelody</b><span>VOD · 7 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:332"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_luzu-440x248.jpg?vod=85" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Luzu</b><span>VOD · 1 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:9"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_juansguarnizo-440x248.jpg?vod=86" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>JuanSGuarnizo</b><span>VOD · 2 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:46"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_knekro-440x248.jpg?vod=87" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Knekro</b><span>VOD · 3 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:83"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_illojuan-440x248.jpg?vod=88" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>IlloJuan</b><span>VOD · 4 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:120"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_carola-440x248.jpg?vod=89" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Carola</b><span>VOD · 5 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:157"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_mayichi-440x248.jpg?vod=90" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>Mayichi</b><span>VOD · 6 дн. назад · 2:49:55</span></div>
+        </div>
+        <div class="stream-track">
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:207"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_bratishkinoff-440x248.jpg?vod=91" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>bratishkinoff</b><span>VOD · 7 дн. назад · 4:55:01</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:244"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_buster-440x248.jpg?vod=92" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>buster</b><span>VOD · 1 дн. назад · 7:11:34</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:281"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_evelone192-440x248.jpg?vod=93" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>evelone192</b><span>VOD · 2 дн. назад · 2:06:48</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:318"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_jesusavgn-440x248.jpg?vod=94" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>jesusavgn</b><span>VOD · 3 дн. назад · 3:42:18</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:355"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_stray228-440x248.jpg?vod=95" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>stray228</b><span>VOD · 4 дн. назад · 2:17:06</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:32"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_shadowkekw-440x248.jpg?vod=96" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>shadowkekw</b><span>VOD · 5 дн. назад · 5:08:44</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:69"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_honeymad-440x248.jpg?vod=97" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>honeymad</b><span>VOD · 6 дн. назад · 1:56:30</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:106"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_maddyson-440x248.jpg?vod=98" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>maddyson</b><span>VOD · 7 дн. назад · 4:21:12</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:143"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_recrent-440x248.jpg?vod=99" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>recrent</b><span>VOD · 1 дн. назад · 2:49:55</span></div>
+          <div class="stream-card-bg vod-card"><div class="vod-thumb" style="--h:180"><img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_silvername-440x248.jpg?vod=100" alt="" loading="lazy" onerror="this.style.display='none'"></div><b>silvername</b><span>VOD · 2 дн. назад · 6:02:10</span></div>
+        </div>
+      </div>
+      <div class="left-gradient" aria-hidden="true"></div>
+      <div class="bottom-gradient" aria-hidden="true"></div>
+      <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <svg class="center-glow" viewBox="0 0 900 220" aria-hidden="true">
+        <defs>
+          <filter id="ellipseBlur" x="-20%" y="-80%" width="140%" height="260%">
+            <feGaussianBlur stdDeviation="25"></feGaussianBlur>
+          </filter>
+        </defs>
+        <ellipse cx="450" cy="92" rx="330" ry="42" fill="rgba(23,139,255,.32)" filter="url(#ellipseBlur)"></ellipse>
+        <ellipse cx="450" cy="104" rx="250" ry="26" fill="rgba(85,230,255,.22)" filter="url(#ellipseBlur)"></ellipse>
+      </svg>
+
+      <div class="container">
+        <div class="hero-layout">
+          <div class="hero-copy reveal">
+            <p class="eyebrow">Менеджеры загрузок</p>
+            <h1 aria-live="polite"><span class="typewriter-line"><span class="typewriter-text" id="heroTypewriter">FETCHR</span><span class="typewriter-cursor" aria-hidden="true"></span></span></h1>
+            <p class="hero-description">Fetchr берет на себя рутину загрузки стрим-контента: скачивает VOD, находит скрытые и удаленные стримы, блюрит спонсорские блоки, сохраняет чат и отдает чистые файлы без ручной возни с набором утилит.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="/api/downloads/Fetchr-Setup-v0.2.4.exe" data-action="download-app" download>Скачать
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a class="btn" href="#projects">Смотреть демо</a>
+            </div>
+            <a class="liquid-card" href="https://www.youtube.com/@NarezkiRachela" target="_blank" rel="noopener noreferrer" aria-label="Открыть канал Нарезки Рачела на YouTube">
+              <div class="glass-year">[2026]</div>
+              <h2 class="glass-title">Создано энтузиастом-нарезчиком</h2>
+              <p class="glass-text">канала «Нарезки Рачела»</p><img class="rachel-logo" src="/docs/design/fetchr-redesign/site/rachela-avatar-lite.jpg" alt="Нарезки Рачела"></a>
+          </div>
+
+          <div class="product-stage reveal">
+            <article class="product-window" id="productWindow" aria-label="Демонстрация интерфейса Fetchr">
+              <div class="mac-top" aria-hidden="true">
+                <span class="mac-dot red"></span>
+                <span class="mac-dot yellow"></span>
+                <span class="mac-dot green"></span>
+                <span class="mac-title">Fetchr beta</span>
+              </div>
+              <div class="product-shot">
+                <div class="screen-stack" id="screenStack">
+                  <img class="screen-frame active" src="/docs/design/fetchr-redesign/site/screen-1-topaz-web.jpg" alt="Скриншот Fetchr 1" data-screen-index="0">
+                  <img class="screen-frame" src="/docs/design/fetchr-redesign/site/screen-2-topaz-web.jpg" alt="Скриншот Fetchr 2" data-screen-index="1">
+                  <img class="screen-frame" src="/docs/design/fetchr-redesign/site/screen-3-topaz-web.jpg" alt="Скриншот Fetchr 3" data-screen-index="2">
+                  <img class="screen-frame" src="/docs/design/fetchr-redesign/site/screen-4-topaz-web.jpg" alt="Скриншот Fetchr 4" data-screen-index="3">
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="source-strip reveal" aria-label="Поддерживаемые платформы">
+        <div class="source-strip-head">
+          <span>Поддерживаемые платформы</span>
+          <b>источники загрузки VOD</b>
+        </div>
+        <div class="source-platforms">
+          <div class="platform-card">
+            <img src="docs/design/fetchr-redesign/site/platform-youtube-badge.png" alt="YouTube">
+          </div>
+          <div class="platform-card">
+            <img src="docs/design/fetchr-redesign/site/platform-twitch-badge.png" alt="Twitch">
+          </div>
+          <div class="platform-card">
+            <img src="docs/design/fetchr-redesign/site/platform-kick-badge.png" alt="Kick">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="beta-video-panel reveal" aria-label="Будущий видеообзор Fetchr beta">
+          <div class="beta-video-frame">
+            <video controls playsinline preload="metadata" aria-label="Видео 1920x1080 скоро будет добавлено"></video>
+            <div class="beta-video-soon">
+              <strong>Скоро</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="beta">
+      <div class="container">
+        <div class="stats-strip reveal" aria-label="Статистика Fetchr beta">
+          <article class="stat-card">
+            <span>загрузок приложения</span>
+            <strong data-live-metric="app-downloads">—</strong>
+          </article>
+          <article class="stat-card">
+            <span>скачанных записей</span>
+            <strong data-live-metric="vod-downloads">—</strong>
+          </article>
+        </div>
+
+        <div class="section-head top-streamers-head reveal">
+          <div>
+            <span class="label">ТОП СТРИМЕРЫ</span>
+          </div>
+        </div>
+
+        <div class="top-streamers">
+          <div class="podium reveal" aria-label="Топ стримеры по скачиванию записей">
+            <article class="podium-card second" style="--bar-height: 76%;">
+              <img class="podium-media" alt="" loading="lazy" hidden>
+              <div class="medal">2</div>
+              <img class="streamer-avatar" alt="" loading="lazy" hidden>
+              <div class="podium-content">
+                <h3>—</h3>
+                <span class="download-badge">—</span>
+              </div>
+            </article>
+            <article class="podium-card first" style="--bar-height: 100%;">
+              <img class="podium-media" alt="" loading="lazy" hidden>
+              <div class="medal">1</div>
+              <img class="streamer-avatar" alt="" loading="lazy" hidden>
+              <div class="podium-content">
+                <h3>—</h3>
+                <span class="download-badge">—</span>
+              </div>
+            </article>
+            <article class="podium-card third" style="--bar-height: 60%;">
+              <img class="podium-media" alt="" loading="lazy" hidden>
+              <div class="medal">3</div>
+              <img class="streamer-avatar" alt="" loading="lazy" hidden>
+              <div class="podium-content">
+                <h3>—</h3>
+                <span class="download-badge">—</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="testimonial-carousel reveal" aria-label="Отзывы beta-команд">
+          <button class="carousel-btn" type="button" data-review-prev aria-label="Предыдущий отзыв">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="testimonial-window">
+            <div class="testimonial-track" id="testimonialTrack">
+              <article class="testimonial-slide">
+                <div class="testimonial-person">
+                  <div class="testimonial-avatar">—</div>
+                  <div><b>—</b><small>—</small></div>
+                </div>
+                <span class="company">—</span>
+                <p>—</p>
+              </article>
+            </div>
+          </div>
+          <div class="carousel-dots" aria-label="Навигация по отзывам"></div>
+          <button class="carousel-btn" type="button" data-review-next aria-label="Следующий отзыв">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="review-actions">
+            <a class="btn btn-ghost" href="/reviews">Все отзывы</a>
+            <a class="btn btn-primary" href="/write-review">Написать отзыв
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" data-route-page="reviews">
+      <div class="container">
+        <div class="review-page-head">
+          <div>
+            <h1>ОТЗЫВЫ</h1>
+          </div>
+          <a class="btn btn-primary" href="/write-review">Написать отзыв</a>
+        </div>
+        <div class="reviews-grid" id="allReviewsList">
+          <div class="review-empty">Отзывы загружаются...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="write-review" data-route-page="write-review">
+      <div class="container">
+        <div class="review-form-shell">
+          <div class="review-page-head review-wizard-head">
+            <div>
+              <span class="label">Новый отзыв</span>
+              <h1>Оставить отзыв о Fetchr.</h1>
+              <p>Ответь на несколько вопросов. Перед публикацией покажем полный предпросмотр отзыва.</p>
+            </div>
+          </div>
+          <div class="review-wizard-progress" id="reviewWizardProgress" aria-hidden="true"></div>
+          <form class="review-form" id="reviewForm">
+            <input type="hidden" id="reviewRating" name="rating" value="0">
+            <input type="hidden" id="reviewText" name="text">
+            <section class="review-step active" data-review-step="0">
+              <h2>Как вас зовут?</h2>
+              <p class="review-step-copy">Это имя будет показано в отзыве.</p>
+              <div class="field">
+                <label for="reviewDisplayName">Ваше имя *</label>
+                <input id="reviewDisplayName" name="display_name" autocomplete="name" required placeholder="Например, Павел">
+              </div>
+            </section>
+            <section class="review-step" data-review-step="1">
+              <h2>Какой ваш никнейм?</h2>
+              <p class="review-step-copy">Необязательно: ник в проекте, YouTube-канал или публичный псевдоним.</p>
+              <div class="field">
+                <label for="reviewNickname">Никнейм</label>
+                <input id="reviewNickname" name="nickname" autocomplete="nickname" placeholder="Необязательно">
+              </div>
+            </section>
+            <section class="review-step" data-review-step="2">
+              <h2>Оцените приложение</h2>
+              <p class="review-step-copy">Выберите от 1 до 5 звезд.</p>
+              <div class="star-rating" id="reviewStars" role="radiogroup" aria-label="Оценка приложения">
+                <button type="button" data-rating="1" aria-label="1 звезда">★</button>
+                <button type="button" data-rating="2" aria-label="2 звезды">★</button>
+                <button type="button" data-rating="3" aria-label="3 звезды">★</button>
+                <button type="button" data-rating="4" aria-label="4 звезды">★</button>
+                <button type="button" data-rating="5" aria-label="5 звезд">★</button>
+              </div>
+            </section>
+            <section class="review-step" data-review-step="3">
+              <h2>Опишите свой опыт</h2>
+              <p class="review-step-copy">Описание опыта должно быть минимум 100 символов. Можно прикрепить фото или видео.</p>
+              <div class="experience-grid">
+                <div class="field experience-field">
+                  <label for="reviewExperience">Расскажите подробнее о своем опыте *</label>
+                  <textarea id="reviewExperience" name="experience" required minlength="100" placeholder="Что вам понравилось? Какие задачи Fetchr закрыл? Будьте честны, полезны и конструктивны."></textarea>
+                  <div class="word-counter" id="reviewWordCounter">0 / 100 символов</div>
+                </div>
+                <div class="field review-upload-field">
+                  <label class="upload-control" for="reviewProofFile">
+                    <input id="reviewProofFile" name="proof_file" type="file" accept="image/*,video/*">
+                    <span>Загрузить файл</span>
+                  </label>
+                  <figure class="review-proof-preview" id="reviewProofPreview" hidden></figure>
+                </div>
+              </div>
+            </section>
+            <section class="review-step" data-review-step="4">
+              <h2>Укажите свой ID</h2>
+              <p class="review-step-copy">ID проверяется до публикации. Если ID неверный, отзыв нельзя будет отправить.</p>
+              <div class="id-field-row">
+                <div class="field">
+                  <label for="reviewMachineId">Machine ID *</label>
+                  <input id="reviewMachineId" name="machine_id" required placeholder="A21000E988D8CB72E5650D63BD49C956" autocomplete="off">
+                  <div class="id-state" id="reviewIdState"></div>
+                </div>
+                <button class="btn" type="button" id="reviewValidateId">Проверить</button>
+              </div>
+              <figure class="id-tutorial">
+                <figcaption>Где находится ваш ID</figcaption>
+                <img src="/assets/tutorial-id.png" alt="Где находится Machine ID в Fetchr" loading="lazy">
+              </figure>
+            </section>
+            <section class="review-step" data-review-step="5">
+              <h2>Контакты</h2>
+              <p class="review-step-copy">Контакт обязателен: он нужен, чтобы отзыв можно было проверить и связаться с автором.</p>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="reviewProfile">Проект или публичный профиль</label>
+                  <input id="reviewProfile" name="profile_url" placeholder="Необязательно">
+                </div>
+                <div class="field">
+                  <label for="reviewContact">Контакт для связи с вами *</label>
+                  <input id="reviewContact" name="contact_url" required placeholder="Telegram, YouTube, Twitch, Discord или ссылка">
+                </div>
+              </div>
+            </section>
+            <section class="review-step" data-review-step="6">
+              <h2>Предпросмотр отзыва</h2>
+              <p class="review-step-copy">Проверьте, как отзыв будет выглядеть перед публикацией.</p>
+              <article class="review-preview-card" id="reviewFinalPreview"></article>
+              <label class="check-row">
+                <input type="checkbox" name="rules_consent" required>
+                <span>Я согласен с правилами публикации и понимаю, что отзыв будет показан публично.</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" name="personal_experience" required>
+                <span>Я подтверждаю, что отзыв основан на личном опыте.</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" name="allow_profile" required>
+                <span>Разрешаю показать часть публичного профиля, аватар и ссылку для проверки подлинности.</span>
+              </label>
+            </section>
+            <section class="review-step" data-review-step="7">
+              <div class="review-thanks">
+                <div>
+                  <span class="label">Готово</span>
+                  <h2>Спасибо за ваш отзыв!</h2>
+                  <p class="review-step-copy">Отзыв опубликован и появится на странице после обновления списка.</p>
+                </div>
+              </div>
+            </section>
+            <div class="review-form-status" id="reviewFormStatus" aria-live="polite"></div>
+            <div class="review-wizard-actions">
+              <button class="btn" type="button" id="reviewBack">Назад</button>
+              <button class="btn btn-primary" type="button" id="reviewNext">Далее
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <span>Fetchr 2026 beta</span>
+      <span>© 2026 Fetchr. Все права защищены.</span>
+    </div>
+  </footer>
+
+  <script>
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const activePath = window.location.pathname.replace(/\/+$/, "") || "/";
+    if (activePath === "/reviews") document.body.classList.add("route-reviews");
+    if (activePath === "/write-review") document.body.classList.add("route-write-review");
+
+    const menu = document.getElementById("mobileMenu");
+    const openMenu = document.querySelector(".menu-btn");
+    const closeMenu = document.querySelector(".mobile-close");
+    const setMenu = (isOpen) => {
+      menu.classList.toggle("open", isOpen);
+      menu.setAttribute("aria-hidden", String(!isOpen));
+      openMenu.setAttribute("aria-expanded", String(isOpen));
+      document.body.style.overflow = isOpen ? "hidden" : "";
+    };
+    openMenu.addEventListener("click", () => setMenu(true));
+    closeMenu.addEventListener("click", () => setMenu(false));
+    menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setMenu(false)));
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach((node) => revealObserver.observe(node));
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const node = entry.target;
+        const target = Number(node.dataset.count || "0");
+        const duration = reduceMotion ? 1 : 1100;
+        const started = performance.now();
+        const render = (now) => {
+          const progress = Math.min((now - started) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          node.textContent = Math.round(target * eased).toLocaleString("ru-RU");
+          if (progress < 1) requestAnimationFrame(render);
+        };
+        requestAnimationFrame(render);
+        counterObserver.unobserve(node);
+      });
+    }, { threshold: .45 });
+    document.querySelectorAll("[data-count]").forEach((node) => counterObserver.observe(node));
+
+    const screenStack = document.getElementById("screenStack");
+    const screenFrames = screenStack ? Array.from(screenStack.querySelectorAll(".screen-frame")) : [];
+    let activeScreenIndex = 0;
+
+    const nextRandomScreenIndex = () => {
+      if (screenFrames.length < 2) return 0;
+      let nextIndex = activeScreenIndex;
+      while (nextIndex === activeScreenIndex) {
+        nextIndex = Math.floor(Math.random() * screenFrames.length);
+      }
+      return nextIndex;
+    };
+
+    const rotateScreens = () => {
+      if (!screenStack || screenFrames.length < 2) return;
+      const currentFrame = screenFrames[activeScreenIndex];
+      const nextIndex = nextRandomScreenIndex();
+      const nextFrame = screenFrames[nextIndex];
+
+      currentFrame.classList.remove("slide-in", "slide-out");
+      nextFrame.classList.remove("slide-in", "slide-out");
+      void screenStack.offsetWidth;
+
+      currentFrame.classList.add("slide-out");
+      nextFrame.classList.add("slide-in", "active");
+
+      window.setTimeout(() => {
+        currentFrame.classList.remove("active", "slide-out");
+        nextFrame.classList.remove("slide-in");
+        activeScreenIndex = nextIndex;
+      }, 900);
+    };
+
+    if (screenFrames.length > 1 && !reduceMotion) {
+      window.setInterval(rotateScreens, 3600);
+    }
+
+    const typewriterNode = document.getElementById("heroTypewriter");
+    const typewriterPhrases = ["FETCHR", "ЛИЧНЫЙ ПОМОЩНИК", "МЕНЕДЖЕР ЗАГРУЗОК", "ВРЕМЯ — ДЕНЬГИ"];
+
+    const randomNextPhrase = (current) => {
+      if (typewriterPhrases.length < 2) return typewriterPhrases[0];
+      let next = current;
+      while (next === current) {
+        next = typewriterPhrases[Math.floor(Math.random() * typewriterPhrases.length)];
+      }
+      return next;
+    };
+
+    if (typewriterNode) {
+      let activePhrase = typewriterNode.textContent || typewriterPhrases[0];
+      let charIndex = activePhrase.length;
+      let deleting = false;
+
+      const tickTypewriter = () => {
+        if (reduceMotion) {
+          activePhrase = randomNextPhrase(activePhrase);
+          typewriterNode.textContent = activePhrase;
+          window.setTimeout(tickTypewriter, 1800);
+          return;
+        }
+
+        if (deleting) {
+          charIndex -= 1;
+          typewriterNode.textContent = activePhrase.slice(0, Math.max(0, charIndex));
+
+          if (charIndex <= 0) {
+            deleting = false;
+            activePhrase = randomNextPhrase(activePhrase);
+            window.setTimeout(tickTypewriter, 220);
+            return;
+          }
+
+          window.setTimeout(tickTypewriter, 34 + Math.random() * 26);
+          return;
+        }
+
+        charIndex += 1;
+        typewriterNode.textContent = activePhrase.slice(0, charIndex);
+
+        if (charIndex >= activePhrase.length) {
+          deleting = true;
+          window.setTimeout(tickTypewriter, 1150 + Math.random() * 850);
+          return;
+        }
+
+        window.setTimeout(tickTypewriter, 58 + Math.random() * 52);
+      };
+
+      window.setTimeout(tickTypewriter, 1200);
+    }
+
+    const metricNodes = {
+      appDownloads: document.querySelector('[data-live-metric="app-downloads"]'),
+      vodDownloads: document.querySelector('[data-live-metric="vod-downloads"]'),
+    };
+    const podiumCards = Array.from(document.querySelectorAll(".podium-card"));
+    const podiumByPlace = {
+      1: podiumCards.find((card) => card.classList.contains("first")),
+      2: podiumCards.find((card) => card.classList.contains("second")),
+      3: podiumCards.find((card) => card.classList.contains("third")),
+    };
+
+    const formatMetric = (value) => {
+      const number = Number(value || 0);
+      return Number.isFinite(number) ? number.toLocaleString("ru-RU") : "0";
+    };
+
+    const setMetricText = (node, value) => {
+      if (!node) return;
+      node.textContent = formatMetric(value);
+    };
+
+    const updatePodiumCard = (place, item, maxDownloads) => {
+      const card = podiumByPlace[place];
+      if (!card) return;
+      const name = card.querySelector("h3");
+      const badge = card.querySelector(".download-badge");
+      const avatar = card.querySelector(".streamer-avatar");
+      const media = card.querySelector(".podium-media");
+      const downloads = Number(item?.downloads || 0);
+      const height = maxDownloads > 0 ? Math.max(42, Math.round((downloads / maxDownloads) * 100)) : 42;
+
+      card.style.setProperty("--bar-height", `${height}%`);
+      if (name) name.textContent = item?.streamer || "—";
+      if (badge) badge.textContent = item ? `${formatMetric(downloads)} скачиваний` : "—";
+      if (avatar) {
+        avatar.onerror = () => {
+          avatar.hidden = true;
+          avatar.removeAttribute("src");
+        };
+        if (item?.avatar_url) {
+          avatar.src = item.avatar_url;
+          avatar.alt = `Аватар ${item.streamer || "стримера"}`;
+          avatar.hidden = false;
+        } else {
+          avatar.hidden = true;
+          avatar.removeAttribute("src");
+        }
+      }
+      if (media) {
+        media.onerror = () => {
+          media.hidden = true;
+          media.removeAttribute("src");
+        };
+        if (item?.preview_url) {
+          media.src = item.preview_url;
+          media.alt = `Превью ${item.streamer || "стримера"}`;
+          media.hidden = false;
+        } else {
+          media.hidden = true;
+          media.removeAttribute("src");
+        }
+      }
+      card.classList.toggle("is-empty", !item);
+    };
+
+    const updateLiveTelemetry = async () => {
+      try {
+        const response = await fetch("/api/telemetry/summary", {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+        });
+        if (!response.ok) throw new Error(`Telemetry HTTP ${response.status}`);
+        const telemetry = await response.json();
+        const topStreamers = Array.isArray(telemetry.top_streamers) ? telemetry.top_streamers : [];
+        const maxDownloads = Math.max(...topStreamers.slice(0, 3).map((item) => Number(item.downloads || 0)), 0);
+
+        setMetricText(metricNodes.appDownloads, telemetry.app_downloads ?? telemetry.app_launches);
+        setMetricText(metricNodes.vodDownloads, telemetry.downloaded_streams);
+        updatePodiumCard(1, topStreamers[0], maxDownloads);
+        updatePodiumCard(2, topStreamers[1], maxDownloads);
+        updatePodiumCard(3, topStreamers[2], maxDownloads);
+      } catch (err) {
+        console.warn("Fetchr telemetry update failed", err);
+      }
+    };
+
+    updateLiveTelemetry();
+    window.setInterval(updateLiveTelemetry, 30000);
+
+    const reviewTrack = document.getElementById("testimonialTrack");
+    const reviewCarousel = document.querySelector(".testimonial-carousel");
+    const reviewDots = document.querySelector(".carousel-dots");
+    const allReviewsList = document.getElementById("allReviewsList");
+    let reviewSlides = [];
+    let reviewIndex = 0;
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+
+    const ratingText = (rating) => `Оценка ${Math.max(1, Math.min(5, Number(rating) || 5))}/5`;
+
+    const profileHref = (review) => {
+      const value = review.profile_url || review.telegram_url || review.youtube_url || "#";
+      if (value === "#" || /^https?:\/\//i.test(value)) return value;
+      return `https://${value}`;
+    };
+
+    const usageText = (startedAt) => {
+      const started = Date.parse(startedAt || "");
+      if (!Number.isFinite(started)) return "Стаж подтверждается";
+      const hours = Math.max(0, (Date.now() - started) / 3_600_000);
+      if (hours < 24) return "Стаж менее 1 дня";
+      const days = Math.max(1, Math.floor((hours + 12) / 24));
+      if (days < 30) return `Стаж ${days} ${pluralRu(days, "день", "дня", "дней")}`;
+      const months = Math.max(1, Math.floor((days + 15) / 30));
+      if (months < 12) return `Стаж ${months} ${pluralRu(months, "месяц", "месяца", "месяцев")}`;
+      const years = Math.max(1, Math.floor((months + 6) / 12));
+      return `Стаж ${years} ${pluralRu(years, "год", "года", "лет")}`;
+    };
+
+    const pluralRu = (value, one, few, many) => {
+      const mod10 = value % 10;
+      const mod100 = value % 100;
+      if (mod10 === 1 && mod100 !== 11) return one;
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+      return many;
+    };
+
+    const isVideoUrl = (url) => /\.(mp4|webm|mov)(?:\?|$)/i.test(url || "");
+
+    const reviewMediaUrl = (review) => {
+      const url = review.proof_url || "";
+      if (!url) return "";
+      const version = encodeURIComponent(review.id || review.created_at || Date.now());
+      return `${url}${url.includes("?") ? "&" : "?"}v=${version}`;
+    };
+
+    const reviewMediaHtml = (review) => {
+      const mediaUrl = reviewMediaUrl(review);
+      if (!mediaUrl) return "";
+      const safeUrl = escapeHtml(mediaUrl);
+      if (isVideoUrl(mediaUrl)) {
+        return `<div class="review-media" data-review-media="${safeUrl}" aria-label="Открыть видео подтверждения"><video src="${safeUrl}" preload="metadata" muted playsinline></video></div>`;
+      }
+      return `<div class="review-media" data-review-media="${safeUrl}" aria-label="Открыть медиа подтверждения"><img src="${safeUrl}" alt="Медиа подтверждение отзыва" loading="lazy"></div>`;
+    };
+
+    const reviewName = (review) => review.display_name || review.project_username || "Пользователь Fetchr";
+
+    const reviewBodyHtml = (review) => {
+      if (review.experience || review.text) {
+        return `<div class="review-body">
+          <p>${escapeHtml(review.experience || review.text || "Отзыв скоро появится.")}</p>
+        </div>`;
+      }
+      return `<p>${escapeHtml(review.text || "Отзыв скоро появится.")}</p>`;
+    };
+
+    const avatarMarkup = (review) => {
+      const name = reviewName(review);
+      const letter = escapeHtml(name.replace(/^@/, "").slice(0, 1).toUpperCase() || "F");
+      if (review.avatar_url) {
+        return `<img src="${escapeHtml(review.avatar_url)}" alt="${escapeHtml(name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'testimonial-avatar', textContent: '${letter}' }))">`;
+      }
+      return `<div class="testimonial-avatar">${letter}</div>`;
+    };
+
+    const reviewCardHtml = (review, className = "testimonial-slide") => `
+      <a class="${className}" href="${escapeHtml(profileHref(review))}" target="_blank" rel="noopener noreferrer">
+        <div class="testimonial-person">
+          ${avatarMarkup(review)}
+          <div>
+            <b>${escapeHtml(reviewName(review))}</b>
+            <small>${escapeHtml(usageText(review.usage_started_at))}</small>
+          </div>
+        </div>
+        <div class="review-meta">
+          <span class="review-pill">${escapeHtml(ratingText(review.rating))}</span>
+        </div>
+        ${reviewBodyHtml(review)}
+        ${reviewMediaHtml(review)}
+      </a>`;
+
+    const updateReviewDots = () => {
+      if (!reviewDots) return;
+      Array.from(reviewDots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === reviewIndex);
+      });
+    };
+
+    const setReview = (index) => {
+      if (!reviewTrack || !reviewSlides.length) return;
+      reviewIndex = (index + reviewSlides.length) % reviewSlides.length;
+      reviewTrack.style.transform = `translateX(${-reviewIndex * 100}%)`;
+      updateReviewDots();
+    };
+
+    const mountReviewCarousel = (reviews) => {
+      if (!reviewTrack) return;
+      reviewCarousel?.classList.toggle("is-empty", !reviews.length);
+      if (!reviews.length) {
+        reviewTrack.innerHTML = '<div class="testimonial-slide"><div class="review-empty">Пока нет опубликованных отзывов. Будь первым, кто оставит проверенный отзыв о Fetchr.</div></div>';
+      } else {
+        reviewTrack.innerHTML = reviews.slice(0, 10).map((review) => reviewCardHtml(review)).join("");
+      }
+      reviewSlides = Array.from(reviewTrack.children);
+      reviewDots?.replaceChildren(...reviewSlides.map((_, dotIndex) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Показать отзыв ${dotIndex + 1}`);
+        dot.addEventListener("click", () => setReview(dotIndex));
+        return dot;
+      }));
+      setReview(0);
+    };
+
+    const mountAllReviews = (reviews) => {
+      if (!allReviewsList) return;
+      if (!reviews.length) {
+        allReviewsList.innerHTML = '<div class="review-empty">Пока нет опубликованных отзывов.</div>';
+        return;
+      }
+      allReviewsList.innerHTML = reviews.map((review) => reviewCardHtml(review, "review-card")).join("");
+    };
+
+    const loadReviews = async () => {
+      try {
+        const limit = activePath === "/reviews" ? 100 : 10;
+        const response = await fetch(`/api/reviews?limit=${limit}`, {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+        });
+        if (!response.ok) throw new Error(`Reviews HTTP ${response.status}`);
+        const payload = await response.json();
+        const reviews = Array.isArray(payload.reviews) ? payload.reviews : [];
+        mountReviewCarousel(reviews.slice(0, 10));
+        mountAllReviews(reviews);
+      } catch (err) {
+        console.warn("Fetchr reviews update failed", err);
+        mountReviewCarousel([]);
+        mountAllReviews([]);
+      }
+    };
+
+    document.querySelector("[data-review-prev]")?.addEventListener("click", () => setReview(reviewIndex - 1));
+    document.querySelector("[data-review-next]")?.addEventListener("click", () => setReview(reviewIndex + 1));
+    document.addEventListener("click", (event) => {
+      const media = event.target.closest("[data-review-media]");
+      if (!media) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.open(media.dataset.reviewMedia, "_blank", "noopener,noreferrer");
+    });
+    loadReviews();
+    window.setInterval(loadReviews, 60 * 60 * 1000);
+
+    const reviewForm = document.getElementById("reviewForm");
+    const reviewSteps = Array.from(document.querySelectorAll("[data-review-step]"));
+    const reviewProgress = document.getElementById("reviewWizardProgress");
+    const reviewBack = document.getElementById("reviewBack");
+    const reviewNext = document.getElementById("reviewNext");
+    const reviewFinalPreview = document.getElementById("reviewFinalPreview");
+    const reviewDisplayName = document.getElementById("reviewDisplayName");
+    const reviewNickname = document.getElementById("reviewNickname");
+    const reviewRating = document.getElementById("reviewRating");
+    const reviewStars = document.getElementById("reviewStars");
+    const reviewExperience = document.getElementById("reviewExperience");
+    const reviewText = document.getElementById("reviewText");
+    const reviewWordCounter = document.getElementById("reviewWordCounter");
+    const reviewMachineId = document.getElementById("reviewMachineId");
+    const reviewValidateId = document.getElementById("reviewValidateId");
+    const reviewIdState = document.getElementById("reviewIdState");
+    const reviewProfile = document.getElementById("reviewProfile");
+    const reviewContact = document.getElementById("reviewContact");
+    const reviewFormStatus = document.getElementById("reviewFormStatus");
+    const reviewProofFile = document.getElementById("reviewProofFile");
+    const reviewProofPreview = document.getElementById("reviewProofPreview");
+    const reviewProofLabelText = document.querySelector(".upload-control span");
+    const REVIEW_DRAFT_KEY = "fetchr-review-draft-v2";
+    const REVIEW_IMAGE_LIMIT = 10 * 1024 * 1024;
+    const REVIEW_VIDEO_LIMIT = 100 * 1024 * 1024;
+    const REVIEW_DRAFT_TTL = 24 * 60 * 60 * 1000;
+    let reviewStepIndex = 0;
+    let validatedMachineId = "";
+    let validateIdTimer = 0;
+
+    reviewProgress?.replaceChildren(...reviewSteps.slice(0, 7).map(() => document.createElement("span")));
+
+    const setFormStatus = (message, type = "") => {
+      if (!reviewFormStatus) return;
+      reviewFormStatus.textContent = message;
+      reviewFormStatus.className = `review-form-status ${type}`.trim();
+    };
+
+    const updateExperienceCounter = () => {
+      if (!reviewExperience || !reviewWordCounter) return;
+      const count = reviewExperience.value.trim().length;
+      reviewWordCounter.textContent = `${count} / 100 символов`;
+    };
+
+    const setRating = (value) => {
+      const rating = Math.max(0, Math.min(5, Number(value) || 0));
+      if (reviewRating) reviewRating.value = String(rating);
+      reviewStars?.querySelectorAll("button").forEach((button) => {
+        button.classList.toggle("active", Number(button.dataset.rating) <= rating);
+        button.setAttribute("aria-checked", String(Number(button.dataset.rating) === rating));
+      });
+      saveReviewDraft();
+    };
+
+    const composeReviewText = () => {
+      return reviewExperience?.value.trim() || "";
+    };
+
+    const cleanMachineId = (value) => String(value || "").replace(/[^A-F0-9]/gi, "").toUpperCase();
+
+    const buildReviewPayload = () => {
+      const formData = new FormData(reviewForm);
+      const contact = reviewContact?.value.trim() || "";
+      const profile = reviewProfile?.value.trim() || "";
+      const nickname = reviewNickname?.value.trim() || "";
+      const displayName = reviewDisplayName?.value.trim() || "";
+      const payload = {
+        display_name: displayName,
+        nickname,
+        project_username: nickname || displayName,
+        rating: Number(reviewRating?.value || 0),
+        experience: reviewExperience?.value.trim() || "",
+        text: composeReviewText(),
+        machine_id: cleanMachineId(reviewMachineId?.value),
+        profile_url: profile || contact,
+        contact_url: contact,
+        telegram: /^@|t\.me\//i.test(contact) ? contact : "",
+        rules_consent: formData.get("rules_consent") === "on",
+        personal_experience: formData.get("personal_experience") === "on",
+        allow_profile: formData.get("allow_profile") === "on",
+      };
+      if (reviewText) reviewText.value = payload.text;
+      return payload;
+    };
+
+    const setIdState = (message, type = "") => {
+      if (!reviewIdState || !reviewMachineId) return;
+      reviewIdState.textContent = message;
+      reviewIdState.className = `id-state ${type}`.trim();
+      reviewMachineId.classList.toggle("valid", type === "success");
+      reviewMachineId.classList.toggle("invalid", type === "error");
+    };
+
+    const validateMachineId = async () => {
+      const machineId = cleanMachineId(reviewMachineId?.value);
+      if (reviewMachineId) reviewMachineId.value = machineId;
+      if (!/^[A-F0-9]{32}$/.test(machineId)) {
+        validatedMachineId = "";
+        setIdState("Введите 32 символа Machine ID.", "error");
+        return false;
+      }
+      if (validatedMachineId === machineId) return true;
+      setIdState("Проверяем ID...", "");
+      try {
+        const response = await fetch("/api/reviews/validate-id", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ machine_id: machineId }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.valid) {
+          validatedMachineId = "";
+          setIdState(result.message || "ID не подтвержден.", "error");
+          return false;
+        }
+        validatedMachineId = machineId;
+        setIdState("ID подтвержден.", "success");
+        return true;
+      } catch (err) {
+        validatedMachineId = "";
+        setIdState(String(err instanceof Error ? err.message : err), "error");
+        return false;
+      }
+    };
+
+    const renderFinalPreview = async () => {
+      if (!reviewFinalPreview) return;
+      const payload = buildReviewPayload();
+      const file = reviewProofFile?.files?.[0] || await getDraftFile();
+      const rating = "★".repeat(payload.rating).padEnd(5, "☆");
+      reviewFinalPreview.innerHTML = `
+        <h3>${escapeHtml(payload.display_name || "Пользователь Fetchr")}</h3>
+        <div class="review-meta"><span class="review-pill">${escapeHtml(rating)}</span><span class="review-pill">Стаж подтвердится по ID</span></div>
+        <dl>
+          ${payload.nickname ? `<div><dt>Никнейм</dt><dd>${escapeHtml(payload.nickname)}</dd></div>` : ""}
+          <div><dt>Опыт</dt><dd>${escapeHtml(payload.experience)}</dd></div>
+          ${payload.profile_url ? `<div><dt>Профиль / проект</dt><dd>${escapeHtml(payload.profile_url)}</dd></div>` : ""}
+          ${payload.contact_url ? `<div><dt>Контакт для связи</dt><dd>${escapeHtml(payload.contact_url)}</dd></div>` : ""}
+        </dl>
+        ${file ? `<p class="form-hint">Медиа будет прикреплено: ${escapeHtml(file.name)}</p>` : ""}`;
+    };
+
+    const showReviewStep = async (index) => {
+      const nextStepIndex = Math.max(0, Math.min(reviewSteps.length - 1, index));
+      const previousStepIndex = reviewStepIndex;
+      const directionClass = nextStepIndex >= previousStepIndex ? "step-enter-forward" : "step-enter-back";
+      reviewStepIndex = nextStepIndex;
+      reviewSteps.forEach((step, stepIndex) => {
+        const isActive = stepIndex === reviewStepIndex;
+        step.classList.toggle("active", isActive);
+        step.classList.remove("step-enter-forward", "step-enter-back");
+        if (isActive && !reduceMotion) {
+          void step.offsetWidth;
+          step.classList.add(directionClass);
+        }
+      });
+      reviewProgress?.querySelectorAll("span").forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex <= Math.min(reviewStepIndex, 6)));
+      if (reviewBack) {
+        reviewBack.hidden = reviewStepIndex === 0 || reviewStepIndex === 7;
+        reviewBack.textContent = reviewStepIndex === 6 ? "Редактировать" : "Назад";
+      }
+      if (reviewNext) {
+        reviewNext.hidden = reviewStepIndex === 7;
+        reviewNext.innerHTML = reviewStepIndex === 6
+          ? 'Опубликовать <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+          : 'Далее <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      }
+      if (reviewStepIndex === 6) await renderFinalPreview();
+      setFormStatus("");
+    };
+
+    const validateCurrentStep = async () => {
+      const payload = buildReviewPayload();
+      if (reviewStepIndex === 0 && payload.display_name.length < 2) {
+        setFormStatus("Укажите имя.", "error");
+        reviewDisplayName?.focus();
+        return false;
+      }
+      if (reviewStepIndex === 2 && payload.rating < 1) {
+        setFormStatus("Выберите оценку от 1 до 5 звезд.", "error");
+        return false;
+      }
+      if (reviewStepIndex === 3 && payload.experience.length < 100) {
+        setFormStatus("Описание опыта должно быть минимум 100 символов.", "error");
+        reviewExperience?.focus();
+        return false;
+      }
+      if (reviewStepIndex === 4) return validateMachineId();
+      if (reviewStepIndex === 5 && payload.contact_url.length < 3) {
+        setFormStatus("Укажите контакт для связи.", "error");
+        reviewContact?.focus();
+        return false;
+      }
+      if (reviewStepIndex === 6) {
+        if (!payload.rules_consent || !payload.personal_experience || !payload.allow_profile) {
+          setFormStatus("Подтвердите все обязательные соглашения.", "error");
+          return false;
+        }
+        return validateMachineId();
+      }
+      return true;
+    };
+
+    const draftFields = [
+      "display_name",
+      "nickname",
+      "rating",
+      "experience",
+      "machine_id",
+      "profile_url",
+      "contact_url",
+      "rules_consent",
+      "personal_experience",
+      "allow_profile",
+    ];
+
+    const saveReviewDraft = () => {
+      if (!reviewForm) return;
+      const formData = new FormData(reviewForm);
+      const values = {};
+      for (const name of draftFields) {
+        const field = reviewForm.elements[name];
+        if (!field) continue;
+        values[name] = field.type === "checkbox" ? field.checked : formData.get(name);
+      }
+      values.step = reviewStepIndex;
+      localStorage.setItem(REVIEW_DRAFT_KEY, JSON.stringify({
+        expires_at: Date.now() + REVIEW_DRAFT_TTL,
+        values,
+      }));
+    };
+
+    const restoreReviewDraft = () => {
+      if (!reviewForm) return;
+      try {
+        const draft = JSON.parse(localStorage.getItem(REVIEW_DRAFT_KEY) || "null");
+        if (!draft || Date.now() > Number(draft.expires_at)) {
+          localStorage.removeItem(REVIEW_DRAFT_KEY);
+          return;
+        }
+        for (const [name, value] of Object.entries(draft.values || {})) {
+          const field = reviewForm.elements[name];
+          if (!field) continue;
+          if (field.type === "checkbox") field.checked = Boolean(value);
+          else field.value = value || "";
+        }
+        setRating(reviewRating?.value || 0);
+        updateExperienceCounter();
+        if (cleanMachineId(reviewMachineId?.value).length === 32) validateMachineId();
+      } catch {
+        localStorage.removeItem(REVIEW_DRAFT_KEY);
+      }
+    };
+
+    const fileToBase64 = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+      reader.onerror = () => reject(reader.error || new Error("Не удалось прочитать файл."));
+      reader.readAsDataURL(file);
+    });
+
+    const openReviewDraftDb = () => new Promise((resolve, reject) => {
+      if (!("indexedDB" in window)) return resolve(null);
+      const request = indexedDB.open("fetchr-review-draft-db", 1);
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore("files", { keyPath: "id" });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Не удалось открыть локальный черновик файла."));
+    });
+
+    const draftFileTransaction = async (mode) => {
+      const db = await openReviewDraftDb();
+      if (!db) return null;
+      return db.transaction("files", mode).objectStore("files");
+    };
+
+    const saveDraftFile = async (file) => {
+      const store = await draftFileTransaction("readwrite");
+      if (!store) return;
+      await new Promise((resolve, reject) => {
+        const request = store.put({ id: "proof", file, name: file.name, type: file.type, expires_at: Date.now() + REVIEW_DRAFT_TTL });
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const getDraftFile = async () => {
+      const store = await draftFileTransaction("readonly");
+      if (!store) return null;
+      const record = await new Promise((resolve, reject) => {
+        const request = store.get("proof");
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+      if (!record) return null;
+      if (Date.now() > Number(record.expires_at)) {
+        await deleteDraftFile();
+        return null;
+      }
+      if (validateProofFile(record.file)) {
+        await deleteDraftFile();
+        return null;
+      }
+      return record.file || null;
+    };
+
+    const deleteDraftFile = async () => {
+      const store = await draftFileTransaction("readwrite");
+      if (!store) return;
+      await new Promise((resolve, reject) => {
+        const request = store.delete("proof");
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const isReviewVideo = (file) => /^video\//i.test(file?.type || "") || /\.(mp4|webm|mov|m4v|avi)$/i.test(file?.name || "");
+    const isReviewImage = (file) => /^image\//i.test(file?.type || "") || /\.(png|jpe?g|webp|gif)$/i.test(file?.name || "");
+
+    const validateProofFile = (file) => {
+      if (!file) return "";
+      if (isReviewImage(file)) {
+        return file.size <= REVIEW_IMAGE_LIMIT ? "" : "Фото должно быть не больше 10 МБ.";
+      }
+      if (isReviewVideo(file)) {
+        return file.size <= REVIEW_VIDEO_LIMIT ? "" : "Видео должно быть не больше 100 МБ.";
+      }
+      return "Можно загрузить только фото или видео.";
+    };
+
+    const renderProofPreview = (file) => {
+      if (!reviewProofPreview) return;
+      if (!file) {
+        reviewProofPreview.hidden = true;
+        reviewProofPreview.replaceChildren();
+        if (reviewProofLabelText) reviewProofLabelText.textContent = "Загрузить файл";
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      const isVideo = isReviewVideo(file);
+      const media = document.createElement(isVideo ? "video" : "img");
+      media.src = url;
+      if (isVideo) {
+        media.controls = true;
+        media.preload = "metadata";
+      } else {
+        media.alt = "Предпросмотр файла подтверждения";
+      }
+      const caption = document.createElement("figcaption");
+      const name = document.createElement("span");
+      name.textContent = file.name;
+      const open = document.createElement("a");
+      open.href = url;
+      open.target = "_blank";
+      open.rel = "noopener noreferrer";
+      open.textContent = "Открыть полностью";
+      caption.append(name, open);
+      reviewProofPreview.replaceChildren(media, caption);
+      reviewProofPreview.hidden = false;
+      if (reviewProofLabelText) reviewProofLabelText.textContent = file.name;
+    };
+
+    const uploadReviewProof = async (file) => {
+      if (!file) return "";
+      const fileError = validateProofFile(file);
+      if (fileError) throw new Error(fileError);
+      const response = await fetch("/api/review-files", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": file.type || "application/octet-stream",
+          "X-Fetchr-Filename": encodeURIComponent(file.name),
+        },
+        body: file,
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) throw new Error(result.message || result.error || `HTTP ${response.status}`);
+      return result.url || "";
+    };
+
+    reviewStars?.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => setRating(button.dataset.rating)));
+    reviewExperience?.addEventListener("input", updateExperienceCounter);
+    reviewValidateId?.addEventListener("click", validateMachineId);
+    reviewMachineId?.addEventListener("input", () => {
+      validatedMachineId = "";
+      setIdState("", "");
+      clearTimeout(validateIdTimer);
+      const machineId = cleanMachineId(reviewMachineId.value);
+      if (machineId.length === 32) validateIdTimer = window.setTimeout(validateMachineId, 450);
+    });
+    reviewProofFile?.addEventListener("change", async () => {
+      const file = reviewProofFile.files?.[0] || null;
+      const fileError = validateProofFile(file);
+      if (fileError) {
+        setFormStatus(fileError, "error");
+        reviewProofFile.value = "";
+        renderProofPreview(null);
+        await deleteDraftFile();
+        return;
+      }
+      setFormStatus("");
+      renderProofPreview(file);
+      if (file) await saveDraftFile(file);
+      else await deleteDraftFile();
+    });
+    reviewForm?.addEventListener("submit", (event) => event.preventDefault());
+    reviewForm?.addEventListener("input", saveReviewDraft);
+    reviewForm?.addEventListener("change", saveReviewDraft);
+    reviewBack?.addEventListener("click", () => showReviewStep(reviewStepIndex === 6 ? 3 : reviewStepIndex - 1));
+    reviewNext?.addEventListener("click", async () => {
+      if (!(await validateCurrentStep())) return;
+      if (reviewStepIndex < 6) {
+        await showReviewStep(reviewStepIndex + 1);
+        saveReviewDraft();
+        return;
+      }
+      const payload = buildReviewPayload();
+      setFormStatus("Публикуем отзыв...");
+      try {
+        const selectedFile = reviewProofFile?.files?.[0] || await getDraftFile();
+        if (selectedFile) {
+          setFormStatus("Загружаем файл подтверждения...");
+          payload.proof_url = await uploadReviewProof(selectedFile);
+        }
+        const response = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Accept": "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (!response.ok || result.ok === false) throw new Error(result.message || result.error || `HTTP ${response.status}`);
+        setFormStatus("Отзыв опубликован.", "success");
+        localStorage.removeItem(REVIEW_DRAFT_KEY);
+        await deleteDraftFile();
+        reviewForm.reset();
+        renderProofPreview(null);
+        setRating(0);
+        updateExperienceCounter();
+        await loadReviews();
+        await showReviewStep(7);
+      } catch (err) {
+        setFormStatus(String(err instanceof Error ? err.message : err), "error");
+      }
+    });
+
+    restoreReviewDraft();
+    getDraftFile().then(renderProofPreview).catch(() => {});
+    updateExperienceCounter();
+    showReviewStep(0);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

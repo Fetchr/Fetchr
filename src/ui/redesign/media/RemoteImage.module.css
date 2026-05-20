@@ -1,0 +1,111 @@
+.root {
+  --remote-image-aspect-ratio: 16 / 9;
+  --remote-image-fit: cover;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--remote-image-aspect-ratio);
+  overflow: hidden;
+  border: 1px solid rgba(117, 134, 154, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(72, 151, 224, 0.2), transparent 38%),
+    linear-gradient(135deg, #151a21, #0b0f14 62%, #10161d);
+  color: rgba(223, 229, 237, 0.82);
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--remote-image-fit);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.imageLoaded {
+  opacity: 1;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  text-align: center;
+}
+
+.fallbackMark {
+  display: grid;
+  min-width: 42px;
+  min-height: 42px;
+  place-items: center;
+  border: 1px solid rgba(223, 229, 237, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.label {
+  margin-top: 8px;
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(223, 229, 237, 0.66);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  z-index: 2;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.64);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 4px 5px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.spinner {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-top-color: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  animation: spin 760ms linear infinite;
+}
+
+.error {
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 122, 0.14);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

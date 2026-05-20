@@ -1,0 +1,37 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.local
+.env.*
+!.env.example
+*.log
+beta-keys.generated.csv
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+/Logs/
+/src-tauri/Logs/
+tmp-*/
+tmp-cdp-check-*/
+*.tsbuildinfo
+
+# Local captures, installers and downloaded playlist URLs
+m3u8-links.txt
+Fetchr-Setup*.exe
+*.msi
+*.zip
+*.m4s
+*.mp4
+*.m3u8
+src-tauri/* (live) */
+
+# Tauri
+src-tauri/target
+src-tauri/gen
+
+# Binaries that we reference but don't version
+src-tauri/binaries/*.exe
+*.exe
+!src-tauri/icons/*.exe

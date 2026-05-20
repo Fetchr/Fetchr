@@ -1,0 +1,93 @@
+:where(.fetchr-redesign-theme, [data-fetchr-theme="redesign"]) {
+  --fetchr-color-graphite-950: #080c11;
+  --fetchr-color-graphite-925: #0b1016;
+  --fetchr-color-graphite-900: #0e141b;
+  --fetchr-color-graphite-850: #121922;
+  --fetchr-color-graphite-800: #161f2a;
+  --fetchr-color-graphite-750: #1a2430;
+  --fetchr-color-graphite-700: #202b38;
+  --fetchr-color-graphite-650: #263241;
+
+  --fetchr-color-app-bg: var(--fetchr-color-graphite-950);
+  --fetchr-color-panel: #101720;
+  --fetchr-color-panel-raised: #141d27;
+  --fetchr-color-panel-elevated: #182332;
+  --fetchr-color-panel-inset: #0b1118;
+  --fetchr-color-panel-hover: #1b2735;
+  --fetchr-color-panel-selected: #132b4b;
+
+  --fetchr-color-border-subtle: rgba(131, 148, 171, 0.16);
+  --fetchr-color-border: rgba(131, 148, 171, 0.24);
+  --fetchr-color-border-strong: rgba(148, 166, 190, 0.36);
+  --fetchr-color-focus: rgba(45, 131, 255, 0.72);
+
+  --fetchr-color-accent: #2d83ff;
+  --fetchr-color-accent-hover: #4694ff;
+  --fetchr-color-accent-soft: rgba(45, 131, 255, 0.16);
+  --fetchr-color-accent-muted: #1b4d8f;
+
+  --fetchr-color-text: #f4f7fb;
+  --fetchr-color-text-secondary: #c7d0dc;
+  --fetchr-color-text-tertiary: #8f9dad;
+  --fetchr-color-text-muted: #627082;
+  --fetchr-color-text-inverse: #07101a;
+
+  --fetchr-color-success: #31d07a;
+  --fetchr-color-success-soft: rgba(49, 208, 122, 0.14);
+  --fetchr-color-warning: #f2a93b;
+  --fetchr-color-warning-soft: rgba(242, 169, 59, 0.15);
+  --fetchr-color-danger: #ff5f67;
+  --fetchr-color-danger-soft: rgba(255, 95, 103, 0.15);
+
+  --fetchr-space-0: 0;
+  --fetchr-space-1: 2px;
+  --fetchr-space-2: 4px;
+  --fetchr-space-3: 6px;
+  --fetchr-space-4: 8px;
+  --fetchr-space-5: 10px;
+  --fetchr-space-6: 12px;
+  --fetchr-space-7: 14px;
+  --fetchr-space-8: 16px;
+  --fetchr-space-10: 20px;
+  --fetchr-space-12: 24px;
+  --fetchr-space-14: 28px;
+  --fetchr-space-16: 32px;
+  --fetchr-space-20: 40px;
+  --fetchr-space-24: 48px;
+
+  --fetchr-radius-none: 0;
+  --fetchr-radius-xs: 3px;
+  --fetchr-radius-sm: 4px;
+  --fetchr-radius-md: 6px;
+  --fetchr-radius-lg: 8px;
+  --fetchr-radius-xl: 10px;
+  --fetchr-radius-pill: 999px;
+
+  --fetchr-font-size-xs: 10px;
+  --fetchr-font-size-sm: 11px;
+  --fetchr-font-size-md: 12px;
+  --fetchr-font-size-base: 13px;
+  --fetchr-font-size-lg: 14px;
+  --fetchr-font-size-xl: 16px;
+  --fetchr-font-size-title: 18px;
+  --fetchr-font-size-display: 22px;
+
+  --fetchr-line-height-tight: 1.15;
+  --fetchr-line-height-compact: 1.25;
+  --fetchr-line-height-normal: 1.45;
+
+  --fetchr-shadow-panel: 0 10px 28px rgba(0, 0, 0, 0.24);
+  --fetchr-shadow-elevated: 0 18px 42px rgba(0, 0, 0, 0.34);
+  --fetchr-shadow-focus: 0 0 0 1px rgba(45, 131, 255, 0.72), 0 0 0 4px rgba(45, 131, 255, 0.16);
+  --fetchr-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  --fetchr-transition-fast: 120ms ease;
+  --fetchr-transition-base: 180ms ease;
+}
+
+:where(.fetchr-redesign-theme, [data-fetchr-theme="redesign"]) {
+  background: var(--fetchr-color-app-bg);
+  color: var(--fetchr-color-text);
+  font-size: var(--fetchr-font-size-base);
+  line-height: var(--fetchr-line-height-normal);
+}

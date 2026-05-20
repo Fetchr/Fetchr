@@ -1,0 +1,57 @@
+﻿[
+  {
+    "Extension": "mp4",
+    "Url": "https://dgeft87wbj63p.cloudfront.net/8ffd8e17bcfdf593990d_t2x2_316033683668_1778162557/chunked/index-dvr.m3u8",
+    "OriginalUrl": "",
+    "Playlist": {
+      "Url": "",
+      "IsLive": false,
+      "RefreshIntervalMs": 15000,
+      "TotalDuration": 32.665,
+      "TargetDuration": 13,
+      "MediaInit": {
+        "Index": -1,
+        "Duration": 0,
+        "EncryptInfo": {
+          "Method": "NONE"
+        },
+        "IsEncrypted": false,
+        "Url": "https://dgeft87wbj63p.cloudfront.net/8ffd8e17bcfdf593990d_t2x2_316033683668_1778162557/chunked/init-0.mp4"
+      },
+      "MediaParts": [
+        {
+          "MediaSegments": [
+            {
+              "Index": 0,
+              "Duration": 10,
+              "EncryptInfo": {
+                "Method": "NONE"
+              },
+              "IsEncrypted": false,
+              "Url": "https://dgeft87wbj63p.cloudfront.net/8ffd8e17bcfdf593990d_t2x2_316033683668_1778162557/chunked/0.mp4"
+            },
+            {
+              "Index": 1,
+              "Duration": 10,
+              "EncryptInfo": {
+                "Method": "NONE"
+              },
+              "IsEncrypted": false,
+              "Url": "https://dgeft87wbj63p.cloudfront.net/8ffd8e17bcfdf593990d_t2x2_316033683668_1778162557/chunked/1.mp4"
+            },
+            {
+              "Index": 2,
+              "Duration": 12.665,
+              "EncryptInfo": {
+                "Method": "NONE"
+              },
+              "IsEncrypted": false,
+              "Url": "https://dgeft87wbj63p.cloudfront.net/8ffd8e17bcfdf593990d_t2x2_316033683668_1778162557/chunked/2.mp4"
+            }
+          ]
+        }
+      ]
+    },
+    "SegmentsCount": 3
+  }
+]
